@@ -1,87 +1,205 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Employee Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Employee Dashboard Premium</title>
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f1f5f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #fff;
     }
-    .hidden { display: none; }
-    .nav-btn { @apply p-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 w-full mb-2; }
-    .card { @apply bg-white p-5 rounded-xl shadow mb-4; }
+    .container {
+      max-width: 480px;
+      margin: 2rem auto 5rem;
+      background: #1a202c;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      position: relative;
+    }
+    .hidden {display: none;}
+    input, textarea {
+      background: #2d3748;
+      border: none;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      color: #eee;
+      font-size: 1rem;
+      width: 100%;
+      margin-bottom: 1rem;
+      transition: background-color 0.3s;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      background: #4a5568;
+    }
+    button {
+      background: #667eea;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      width: 100%;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      box-shadow: 0 5px 15px rgba(102,126,234,0.6);
+    }
+    button:hover {
+      background: #5a67d8;
+      box-shadow: 0 8px 25px rgba(102,126,234,0.9);
+    }
+    h2,h3 {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    ul {
+      list-style-type: disc;
+      padding-left: 1.5rem;
+      max-height: 220px;
+      overflow-y: auto;
+      color: #cbd5e0;
+    }
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 0; right: 0;
+      background: #2d3748;
+      display: flex;
+      justify-content: space-around;
+      padding: 0.75rem 0;
+      box-shadow: 0 -3px 10px rgba(0,0,0,0.7);
+      z-index: 1000;
+    }
+    nav button {
+      background: transparent;
+      box-shadow: none;
+      color: #cbd5e0;
+      font-weight: 700;
+      width: auto;
+      padding: 0.5rem 1rem;
+    }
+    nav button.active {
+      color: #667eea;
+      border-bottom: 3px solid #667eea;
+    }
+    /* Animate fade in/out pages */
+    .page {
+      animation-duration: 0.4s;
+      animation-fill-mode: both;
+    }
+    @keyframes fadeInUp {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    .fadeInUp {
+      animation-name: fadeInUp;
+    }
   </style>
 </head>
-<body class="p-4">
+<body>
+  <div class="container">
+    <!-- LOGIN PAGES -->
+    <div id="loginPages">
+      <div id="adminLoginPage" class="page fadeInUp">
+        <h2 class="text-2xl font-bold">Admin Login</h2>
+        <input type="text" id="adminUser" placeholder="Admin Username" autocomplete="off" />
+        <input type="password" id="adminPass" placeholder="Admin Password" autocomplete="off" />
+        <button onclick="adminLogin()">Login as Admin</button>
+      </div>
 
-<!-- Navigation -->
-<div id="nav" class="hidden mb-4">
-  <button class="nav-btn" onclick="showPage('adminLogin')">Admin Login</button>
-  <button class="nav-btn" onclick="showPage('userLogin')">User Login</button>
-</div>
+      <div id="userLoginPage" class="page fadeInUp hidden">
+        <h2 class="text-2xl font-bold">User Login</h2>
+        <input type="text" id="userName" placeholder="Username" autocomplete="off" />
+        <input type="text" id="userKey" placeholder="User Key" autocomplete="off" />
+        <button onclick="userLogin()">Login as User</button>
+      </div>
 
-<!-- Admin Login -->
-<div id="adminLogin" class="card">
-  <h2 class="text-xl font-bold mb-2">Admin Login</h2>
-  <input id="adminUser" class="border p-2 w-full mb-2" placeholder="Username">
-  <input id="adminPass" class="border p-2 w-full mb-2" placeholder="Password">
-  <button onclick="adminLogin()" class="nav-btn">Login as Admin</button>
-</div>
+      <div class="mt-4 text-center text-sm text-gray-300">
+        <button id="showAdminLoginBtn" class="mr-4 underline" onclick="showLoginPage('admin')">Admin Login</button>
+        <button id="showUserLoginBtn" class="underline" onclick="showLoginPage('user')">User Login</button>
+      </div>
+    </div>
 
-<!-- User Login -->
-<div id="userLogin" class="card hidden">
-  <h2 class="text-xl font-bold mb-2">User Login</h2>
-  <input id="userKey" class="border p-2 w-full mb-2" placeholder="Enter Your Key">
-  <button onclick="userLogin()" class="nav-btn">Login as User</button>
-</div>
+    <!-- ADMIN DASHBOARD -->
+    <div id="adminDashboard" class="hidden page fadeInUp">
+      <h2 class="text-3xl font-bold mb-4 text-center">Admin Dashboard</h2>
 
-<!-- Admin Dashboard -->
-<div id="adminDashboard" class="hidden">
-  <div class="card">
-    <h3 class="text-lg font-bold mb-2">Send Report</h3>
-    <input id="rUser" class="border p-2 w-full mb-2" placeholder="User Key">
-    <textarea id="rMsg" class="border p-2 w-full mb-2" placeholder="Message"></textarea>
-    <button onclick="sendReport()" class="nav-btn">Send Report</button>
+      <section class="mb-8">
+        <h3 class="text-xl font-semibold mb-3">Manage Users (Add / Update)</h3>
+        <input type="text" id="manageUserName" placeholder="Username" autocomplete="off" />
+        <input type="text" id="manageUserKey" placeholder="Unique Key for User" autocomplete="off" />
+        <button onclick="addOrUpdateUser()">Save User</button>
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-semibold mb-3">Send Report</h3>
+        <input type="text" id="reportUserKey" placeholder="User Key" autocomplete="off" />
+        <textarea id="reportMessage" rows="3" placeholder="Report Message"></textarea>
+        <button onclick="sendReport()">Send Report</button>
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-semibold mb-3">Send Payment</h3>
+        <input type="text" id="paymentUserKey" placeholder="User Key" autocomplete="off" />
+        <input type="number" id="paymentAmount" placeholder="Amount" autocomplete="off" />
+        <input type="text" id="paymentNote" placeholder="Note" autocomplete="off" />
+        <button onclick="sendPayment()">Send Payment</button>
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-semibold mb-3">Send Notice to All</h3>
+        <textarea id="noticeMessage" rows="3" placeholder="Notice Message"></textarea>
+        <button onclick="sendNotice()">Send Notice</button>
+      </section>
+
+      <button class="mt-6 bg-red-600 hover:bg-red-700" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- USER DASHBOARD -->
+    <div id="userDashboard" class="hidden page fadeInUp">
+      <h2 class="text-3xl font-bold mb-4 text-center">User Dashboard</h2>
+
+      <div id="userInfo" class="mb-6 text-center">
+        <p class="text-lg font-semibold">Welcome, <span id="displayUserName"></span></p>
+        <button class="bg-red-600 hover:bg-red-700 mt-2" onclick="logout()">Logout</button>
+      </div>
+
+      <nav>
+        <button id="tabReports" class="active" onclick="showUserTab('reports')">Reports</button>
+        <button id="tabPayments" onclick="showUserTab('payments')">Payments</button>
+        <button id="tabNotices" onclick="showUserTab('notices')">Notices</button>
+      </nav>
+
+      <section id="userReports" class="mt-4">
+        <h3 class="text-xl font-semibold mb-3">Your Reports</h3>
+        <ul id="reportsList" class="list-disc list-inside max-h-48 overflow-y-auto"></ul>
+      </section>
+
+      <section id="userPayments" class="hidden mt-4">
+        <h3 class="text-xl font-semibold mb-3">Your Payments</h3>
+        <ul id="paymentsList" class="list-disc list-inside max-h-48 overflow-y-auto"></ul>
+      </section>
+
+      <section id="userNotices" class="hidden mt-4">
+        <h3 class="text-xl font-semibold mb-3">Notices</h3>
+        <ul id="noticesList" class="list-disc list-inside max-h-48 overflow-y-auto"></ul>
+      </section>
+    </div>
   </div>
-
-  <div class="card">
-    <h3 class="text-lg font-bold mb-2">Send Payment</h3>
-    <input id="pUser" class="border p-2 w-full mb-2" placeholder="User Key">
-    <input id="pAmt" class="border p-2 w-full mb-2" placeholder="Amount">
-    <input id="pNote" class="border p-2 w-full mb-2" placeholder="Note">
-    <button onclick="sendPayment()" class="nav-btn">Send Payment</button>
-  </div>
-
-  <div class="card">
-    <h3 class="text-lg font-bold mb-2">Send Notice</h3>
-    <textarea id="nMsg" class="border p-2 w-full mb-2" placeholder="Notice Message"></textarea>
-    <button onclick="sendNotice()" class="nav-btn">Send Notice</button>
-  </div>
-</div>
-
-<!-- User Dashboard -->
-<div id="userDashboard" class="hidden">
-  <div class="card">
-    <h3 class="text-lg font-bold mb-2">Your Reports</h3>
-    <ul id="reportList" class="list-disc ml-5"></ul>
-  </div>
-  <div class="card">
-    <h3 class="text-lg font-bold mb-2">Your Payments</h3>
-    <ul id="paymentList" class="list-disc ml-5"></ul>
-  </div>
-  <div class="card">
-    <h3 class="text-lg font-bold mb-2">Notices</h3>
-    <ul id="noticeList" class="list-disc ml-5"></ul>
-  </div>
-</div>
 
 <script>
+  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyBImNhuhq_k4XrVLXmOxOxbN4sNQhMd5PI",
     authDomain: "employeedashboard-ab719.firebaseapp.com",
@@ -90,91 +208,302 @@
     messagingSenderId: "522230234787",
     appId: "1:522230234787:web:3330149914737352b68916"
   };
+
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  function showPage(pageId) {
-    ['adminLogin','userLogin','adminDashboard','userDashboard'].forEach(id => {
-      document.getElementById(id).classList.add('hidden');
-    });
-    document.getElementById(pageId).classList.remove('hidden');
+  // Globals
+  let currentUser = null;
+
+  // Show login page toggling
+  function showLoginPage(type) {
+    document.getElementById('adminLoginPage').classList.toggle('hidden', type !== 'admin');
+    document.getElementById('userLoginPage').classList.toggle('hidden', type !== 'user');
   }
 
+  // Admin login handler
   function adminLogin() {
     const user = document.getElementById('adminUser').value.trim();
     const pass = document.getElementById('adminPass').value.trim();
+
     if(user === 'vnbuyer' && pass === 'vnbuyer123') {
-      Swal.fire('Welcome Admin!');
+      Swal.fire({
+        icon: 'success',
+        title: 'Welcome Admin!',
+        timer: 1200,
+        showConfirmButton: false
+      });
+      currentUser = { role: 'admin', username: user };
       showPage('adminDashboard');
+      clearLoginInputs();
     } else {
-      Swal.fire('Error','Invalid Admin Login','error');
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Admin Credentials'
+      });
     }
   }
 
+  // User login handler
   async function userLogin() {
+    const username = document.getElementById('userName').value.trim();
     const key = document.getElementById('userKey').value.trim();
-    if (!key) return Swal.fire('Enter your key');
-    Swal.fire('Welcome!');
-    loadUserData(key);
-    showPage('userDashboard');
+
+    if(!username || !key) {
+      Swal.fire('Error', 'Please enter username and key', 'error');
+      return;
+    }
+
+    try {
+      const userDoc = await db.collection('users').doc(username).get();
+      if(!userDoc.exists) {
+        Swal.fire('Error', 'Username not found', 'error');
+        return;
+      }
+      const userData = userDoc.data();
+      if(userData.key !== key) {
+        Swal.fire('Error', 'Incorrect key', 'error');
+        return;
+      }
+      currentUser = { role: 'user', username: username };
+      Swal.fire({
+        icon: 'success',
+        title: `Welcome ${username}!`,
+        timer: 1200,
+        showConfirmButton: false
+      });
+      showPage('userDashboard');
+      clearLoginInputs();
+      displayUserName(username);
+      loadUserData(username);
+    } catch(e) {
+      Swal.fire('Error', 'Login failed, try again', 'error');
+      console.error(e);
+    }
   }
 
+  // Clear login inputs
+  function clearLoginInputs() {
+    ['adminUser','adminPass','userName','userKey','manageUserName','manageUserKey','reportUserKey','reportMessage','paymentUserKey','paymentAmount','paymentNote','noticeMessage']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.value = '';
+    });
+  }
+
+  // Show page by id, hide others
+  function showPage(pageId) {
+    ['loginPages','adminDashboard','userDashboard'].forEach(id => {
+      document.getElementById(id).classList.add('hidden');
+    });
+    document.getElementById(pageId).classList.remove('hidden');
+    // Reset user tab to reports on userDashboard
+    if(pageId === 'userDashboard') showUserTab('reports');
+  }
+
+  // Display username on user dashboard
+  function displayUserName(username) {
+    document.getElementById('displayUserName').textContent = username;
+  }
+
+  // Admin: add or update user in Firestore
+  async function addOrUpdateUser() {
+    const username = document.getElementById('manageUserName').value.trim();
+    const key = document.getElementById('manageUserKey').value.trim();
+
+    if(!username || !key) {
+      Swal.fire('Error', 'Username and key required', 'error');
+      return;
+    }
+
+    try {
+      await db.collection('users').doc(username).set({ key });
+      Swal.fire('Success', `User '${username}' saved/updated.`);
+      clearLoginInputs();
+    } catch(e) {
+      Swal.fire('Error', 'Failed to save user', 'error');
+      console.error(e);
+    }
+  }
+
+  // Admin: send report to user
   async function sendReport() {
-    const toUser = rUser.value.trim();
-    const message = rMsg.value.trim();
-    const date = new Date().toLocaleDateString();
-    await db.collection("reports").add({toUser, message, date});
-    Swal.fire('Report Sent');
+    const toUser = document.getElementById('reportUserKey').value.trim();
+    const message = document.getElementById('reportMessage').value.trim();
+    if(!toUser || !message) {
+      Swal.fire('Error', 'User Key and message required', 'error');
+      return;
+    }
+    try {
+      await db.collection('reports').add({
+        toUser,
+        message,
+        date: new Date().toISOString()
+      });
+      Swal.fire('Success', 'Report sent.');
+      clearLoginInputs();
+    } catch(e) {
+      Swal.fire('Error', 'Failed to send report', 'error');
+      console.error(e);
+    }
   }
 
+  // Admin: send payment info to user
   async function sendPayment() {
-    const toUser = pUser.value.trim();
-    const amount = pAmt.value.trim();
-    const note = pNote.value.trim();
-    const date = new Date().toLocaleDateString();
-    await db.collection("payments").add({toUser, amount, note, date});
-    Swal.fire('Payment Sent');
+    const toUser = document.getElementById('paymentUserKey').value.trim();
+    const amount = document.getElementById('paymentAmount').value.trim();
+    const note = document.getElementById('paymentNote').value.trim();
+    if(!toUser || !amount) {
+      Swal.fire('Error', 'User Key and amount required', 'error');
+      return;
+    }
+    try {
+      await db.collection('payments').add({
+        toUser,
+        amount,
+        note,
+        date: new Date().toISOString()
+      });
+      Swal.fire('Success', 'Payment info sent.');
+      clearLoginInputs();
+    } catch(e) {
+      Swal.fire('Error', 'Failed to send payment', 'error');
+      console.error(e);
+    }
   }
 
+  // Admin: send notice to all users
   async function sendNotice() {
-    const message = nMsg.value.trim();
-    const date = new Date().toLocaleDateString();
-    await db.collection("notices").add({message, date});
-    Swal.fire('Notice Sent');
-  }
+    const message = document.getElementById('noticeMessage').value.trim();
+```
 
-  async function loadUserData(key) {
-    const reportList = document.getElementById('reportList');
-    const paymentList = document.getElementById('paymentList');
-    const noticeList = document.getElementById('noticeList');
-    reportList.innerHTML = '';
-    paymentList.innerHTML = '';
-    noticeList.innerHTML = '';
 
-    const rSnap = await db.collection("reports").where("toUser","==",key).get();
-    rSnap.forEach(doc => {
-      const d = doc.data();
-      reportList.innerHTML += `<li>${d.date}: ${d.message}</li>`;
-    });
+```
+if(!message) {
+  Swal.fire('Error', 'Notice message required', 'error');
+  return;
+}
+try {
+  await db.collection('notices').add({
+    message,
+    date: new Date().toISOString()
+  });
+  Swal.fire('Success', 'Notice sent to all users.');
+  clearLoginInputs();
+} catch(e) {
+  Swal.fire('Error', 'Failed to send notice', 'error');
+  console.error(e);
+}
+```
 
-    const pSnap = await db.collection("payments").where("toUser","==",key).get();
-    pSnap.forEach(doc => {
-      const d = doc.data();
-      paymentList.innerHTML += `<li>${d.date}: ৳${d.amount} - ${d.note}</li>`;
-    });
+}
 
-    const nSnap = await db.collection("notices").get();
-    nSnap.forEach(doc => {
-      const d = doc.data();
-      noticeList.innerHTML += `<li>${d.date}: ${d.message}</li>`;
-    });
-  }
+// Load all user data (reports/payments/notices)
+async function loadUserData(username) {
+// Clear previous lists
+document.getElementById('reportsList').innerHTML = '';
+document.getElementById('paymentsList').innerHTML = '';
+document.getElementById('noticesList').innerHTML = '';
 
-  window.onload = () => {
-    document.getElementById('nav').classList.remove('hidden');
-    showPage('adminLogin');
-  }
-</script>
+```
+// Load Reports for user
+const reportsSnapshot = await db.collection('reports')
+  .where('toUser', '==', username)
+  .orderBy('date', 'desc')
+  .get();
+if(reportsSnapshot.empty) {
+  document.getElementById('reportsList').innerHTML = '<li>No reports found.</li>';
+} else {
+  reportsSnapshot.forEach(doc => {
+    const data = doc.data();
+    const date = new Date(data.date).toLocaleString();
+    const li = document.createElement('li');
+    li.textContent = `[${date}] ${data.message}`;
+    document.getElementById('reportsList').appendChild(li);
+  });
+}
+
+// Load Payments for user
+const paymentsSnapshot = await db.collection('payments')
+  .where('toUser', '==', username)
+  .orderBy('date', 'desc')
+  .get();
+if(paymentsSnapshot.empty) {
+  document.getElementById('paymentsList').innerHTML = '<li>No payments found.</li>';
+} else {
+  paymentsSnapshot.forEach(doc => {
+    const data = doc.data();
+    const date = new Date(data.date).toLocaleString();
+    const li = document.createElement('li');
+    li.textContent = `[${date}] Amount: ${data.amount} - Note: ${data.note || '-'}`;
+    document.getElementById('paymentsList').appendChild(li);
+  });
+}
+
+// Load all Notices
+const noticesSnapshot = await db.collection('notices')
+  .orderBy('date', 'desc')
+  .get();
+if(noticesSnapshot.empty) {
+  document.getElementById('noticesList').innerHTML = '<li>No notices found.</li>';
+} else {
+  noticesSnapshot.forEach(doc => {
+    const data = doc.data();
+    const date = new Date(data.date).toLocaleString();
+    const li = document.createElement('li');
+    li.textContent = `[${date}] ${data.message}`;
+    document.getElementById('noticesList').appendChild(li);
+  });
+}
+```
+
+}
+
+// Switch tabs in user dashboard
+function showUserTab(tab) {
+\['userReports', 'userPayments', 'userNotices'].forEach(id => {
+document.getElementById(id).classList.add('hidden');
+});
+\['tabReports', 'tabPayments', 'tabNotices'].forEach(id => {
+document.getElementById(id).classList.remove('active');
+});
+
+```
+if(tab === 'reports') {
+  document.getElementById('userReports').classList.remove('hidden');
+  document.getElementById('tabReports').classList.add('active');
+} else if(tab === 'payments') {
+  document.getElementById('userPayments').classList.remove('hidden');
+  document.getElementById('tabPayments').classList.add('active');
+} else if(tab === 'notices') {
+  document.getElementById('userNotices').classList.remove('hidden');
+  document.getElementById('tabNotices').classList.add('active');
+}
+```
+
+}
+
+// Logout function
+function logout() {
+Swal.fire({
+title: 'Are you sure?',
+icon: 'question',
+showCancelButton: true,
+confirmButtonText: 'Logout',
+cancelButtonText: 'Cancel'
+}).then(result => {
+if(result.isConfirmed) {
+currentUser = null;
+showPage('loginPages');
+clearLoginInputs();
+Swal.fire('Logged out!', '', 'success');
+}
+});
+}
+
+// Initialize - show user login by default
+showLoginPage('user'); </script>
 
 </body>
 </html>
