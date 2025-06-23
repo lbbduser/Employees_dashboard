@@ -1,606 +1,180 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Employees Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employee Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
-    /* Basic Reset and Styles */
-    * {
-      box-sizing: border-box;
-    }
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      margin: 0;
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f1f5f9;
     }
-    #app {
-      background: #1f1f38;
-      border-radius: 12px;
-      max-width: 450px;
-      width: 100%;
-      padding: 30px 25px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      position: relative;
-    }
-    h2 {
-      margin-top: 0;
-      text-align: center;
-      font-weight: 700;
-      margin-bottom: 25px;
-      letter-spacing: 1.5px;
-      user-select: none;
-    }
-    input[type="text"], input[type="password"], input[type="date"], textarea, select {
-      width: 100%;
-      padding: 12px 14px;
-      margin: 8px 0 20px 0;
-      border-radius: 8px;
-      border: none;
-      font-size: 16px;
-      font-weight: 600;
-      outline: none;
-      transition: background-color 0.3s ease;
-      user-select: text;
-    }
-    input[type="text"]:focus, input[type="password"]:focus, input[type="date"]:focus, textarea:focus, select:focus {
-      background-color: #3c3c6d;
-      color: #fff;
-    }
-    button {
-      background: #764ba2;
-      color: white;
-      font-weight: 700;
-      border: none;
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 18px;
-      letter-spacing: 1.2px;
-      transition: background-color 0.3s ease;
-      user-select: none;
-    }
-    button:hover {
-      background: #a66bd8;
-    }
-    nav {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 25px;
-      user-select: none;
-    }
-    nav button {
-      width: auto;
-      background: transparent;
-      padding: 10px 18px;
-      border-radius: 30px;
-      font-size: 15px;
-      font-weight: 600;
-      color: #cbbde1;
-      border: 2px solid transparent;
-      transition: all 0.3s ease;
-    }
-    nav button.active,
-    nav button:hover {
-      background: #a66bd8;
-      border-color: #7c50b0;
-      color: #fff;
-      box-shadow: 0 0 8px #a66bd8aa;
-    }
-    .hidden {
-      display: none !important;
-    }
-    .message-list {
-      max-height: 250px;
-      overflow-y: auto;
-      background: #2a2a52;
-      padding: 15px;
-      border-radius: 10px;
-      font-size: 14px;
-      user-select: text;
-    }
-    .message-item {
-      margin-bottom: 12px;
-      border-bottom: 1px solid #3f3f7e;
-      padding-bottom: 8px;
-    }
-    .message-item:last-child {
-      border-bottom: none;
-    }
-    .message-date {
-      font-size: 12px;
-      opacity: 0.6;
-      margin-bottom: 4px;
-      user-select: none;
-    }
-    /* Popup Styles */
-    #popup {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0);
-      background: #4a3c8c;
-      padding: 25px 35px;
-      border-radius: 15px;
-      box-shadow: 0 0 25px #a66bd8aa;
-      color: white;
-      font-weight: 600;
-      font-size: 17px;
-      text-align: center;
-      user-select: none;
-      z-index: 9999;
-      transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      max-width: 80vw;
-      word-break: break-word;
-    }
-    #popup.show {
-      transform: translate(-50%, -50%) scale(1);
-    }
-    #popup button {
-      margin-top: 20px;
-      background: #a66bd8;
-      padding: 8px 18px;
-      font-size: 15px;
-      border-radius: 12px;
-      user-select: none;
-    }
+    .hidden { display: none; }
+    .nav-btn { @apply p-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 w-full mb-2; }
+    .card { @apply bg-white p-5 rounded-xl shadow mb-4; }
   </style>
 </head>
-<body>
-  <div id="app">
-    <h2 id="page-title">Login</h2>
+<body class="p-4">
 
-    <!-- Login Form -->
-    <div id="login-layer">
-      <input type="text" id="login-username" placeholder="Admin Username (e.g. vnbuyer)" autocomplete="off" />
-      <input type="password" id="login-password" placeholder="Admin Password" autocomplete="off" />
-      <button id="btn-login">Login as Admin</button>
-      <hr style="margin: 20px 0; border-color: #4e4e83;" />
-      <input type="text" id="user-key" placeholder="Employee Key (for users)" autocomplete="off" />
-      <button id="btn-user-login">Login as Employee</button>
-    </div>
+<!-- Navigation -->
+<div id="nav" class="hidden mb-4">
+  <button class="nav-btn" onclick="showPage('adminLogin')">Admin Login</button>
+  <button class="nav-btn" onclick="showPage('userLogin')">User Login</button>
+</div>
 
-    <!-- Navigation -->
-    <nav id="nav-layer" class="hidden">
-      <button data-page="report" class="active">Reports</button>
-      <button data-page="payment">Payments</button>
-      <button data-page="notice">Notices</button>
-      <button id="btn-logout" style="background:#a65454;">Logout</button>
-    </nav>
+<!-- Admin Login -->
+<div id="adminLogin" class="card">
+  <h2 class="text-xl font-bold mb-2">Admin Login</h2>
+  <input id="adminUser" class="border p-2 w-full mb-2" placeholder="Username">
+  <input id="adminPass" class="border p-2 w-full mb-2" placeholder="Password">
+  <button onclick="adminLogin()" class="nav-btn">Login as Admin</button>
+</div>
 
-    <!-- Content Layers -->
-    <div id="content">
+<!-- User Login -->
+<div id="userLogin" class="card hidden">
+  <h2 class="text-xl font-bold mb-2">User Login</h2>
+  <input id="userKey" class="border p-2 w-full mb-2" placeholder="Enter Your Key">
+  <button onclick="userLogin()" class="nav-btn">Login as User</button>
+</div>
 
-      <!-- Report Page -->
-      <section id="report-page" class="page-layer">
-        <h3>Send Report</h3>
-        <select id="report-employee" required>
-          <option value="" disabled selected>Select Employee</option>
-        </select>
-        <textarea id="report-message" placeholder="Enter report message..." rows="4" required></textarea>
-        <textarea id="report-file" placeholder="Paste TXT file content here (optional)" rows="3"></textarea>
-        <input type="date" id="report-date" required />
-        <button id="btn-send-report">Send Report</button>
-
-        <h4 style="margin-top:30px;">Your Reports</h4>
-        <div id="report-list" class="message-list"></div>
-      </section>
-
-      <!-- Payment Page -->
-      <section id="payment-page" class="page-layer hidden">
-        <h3>Add Payment</h3>
-        <select id="payment-employee" required>
-          <option value="" disabled selected>Select Employee</option>
-        </select>
-        <input type="number" id="payment-amount" placeholder="Amount" min="1" required />
-        <input type="text" id="payment-note" placeholder="Note (optional)" />
-        <input type="date" id="payment-date" required />
-        <button id="btn-send-payment">Add Payment</button>
-
-        <h4 style="margin-top:30px;">Your Payments</h4>
-        <div id="payment-list" class="message-list"></div>
-      </section>
-
-      <!-- Notice Page -->
-      <section id="notice-page" class="page-layer hidden">
-        <h3>Send Notice (Admin Only)</h3>
-        <textarea id="notice-message" placeholder="Enter notice message..." rows="4"></textarea>
-        <button id="btn-send-notice">Send Notice</button>
-
-        <h4 style="margin-top:30px;">All Notices</h4>
-        <div id="notice-list" class="message-list"></div>
-      </section>
-
-    </div>
+<!-- Admin Dashboard -->
+<div id="adminDashboard" class="hidden">
+  <div class="card">
+    <h3 class="text-lg font-bold mb-2">Send Report</h3>
+    <input id="rUser" class="border p-2 w-full mb-2" placeholder="User Key">
+    <textarea id="rMsg" class="border p-2 w-full mb-2" placeholder="Message"></textarea>
+    <button onclick="sendReport()" class="nav-btn">Send Report</button>
   </div>
 
-  <!-- Popup -->
-  <div id="popup" class="">
-    <div id="popup-message"></div>
-    <button id="popup-close">Close</button>
+  <div class="card">
+    <h3 class="text-lg font-bold mb-2">Send Payment</h3>
+    <input id="pUser" class="border p-2 w-full mb-2" placeholder="User Key">
+    <input id="pAmt" class="border p-2 w-full mb-2" placeholder="Amount">
+    <input id="pNote" class="border p-2 w-full mb-2" placeholder="Note">
+    <button onclick="sendPayment()" class="nav-btn">Send Payment</button>
   </div>
+
+  <div class="card">
+    <h3 class="text-lg font-bold mb-2">Send Notice</h3>
+    <textarea id="nMsg" class="border p-2 w-full mb-2" placeholder="Notice Message"></textarea>
+    <button onclick="sendNotice()" class="nav-btn">Send Notice</button>
+  </div>
+</div>
+
+<!-- User Dashboard -->
+<div id="userDashboard" class="hidden">
+  <div class="card">
+    <h3 class="text-lg font-bold mb-2">Your Reports</h3>
+    <ul id="reportList" class="list-disc ml-5"></ul>
+  </div>
+  <div class="card">
+    <h3 class="text-lg font-bold mb-2">Your Payments</h3>
+    <ul id="paymentList" class="list-disc ml-5"></ul>
+  </div>
+  <div class="card">
+    <h3 class="text-lg font-bold mb-2">Notices</h3>
+    <ul id="noticeList" class="list-disc ml-5"></ul>
+  </div>
+</div>
 
 <script>
-(() => {
-  const API_URL = "https://script.google.com/macros/s/AKfycbzsKdCaM3eche8XtwntOQSVxZqdveOK4tiyN8ZDt-KRw5HMwpIB8wugsx8z9qhe-eCiUg/exec";
+  const firebaseConfig = {
+    apiKey: "AIzaSyBImNhuhq_k4XrVLXmOxOxbN4sNQhMd5PI",
+    authDomain: "employeedashboard-ab719.firebaseapp.com",
+    projectId: "employeedashboard-ab719",
+    storageBucket: "employeedashboard-ab719.appspot.com",
+    messagingSenderId: "522230234787",
+    appId: "1:522230234787:web:3330149914737352b68916"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-  // Elements
-  const app = document.getElementById('app');
-  const loginLayer = document.getElementById('login-layer');
-  const navLayer = document.getElementById('nav-layer');
-  const pageTitle = document.getElementById('page-title');
-
-  const userKeyInput = document.getElementById('user-key');
-  const loginUsernameInput = document.getElementById('login-username');
-  const loginPasswordInput = document.getElementById('login-password');
-
-  const btnLogin = document.getElementById('btn-login');
-  const btnUserLogin = document.getElementById('btn-user-login');
-  const btnLogout = document.getElementById('btn-logout');
-
-  const navButtons = navLayer.querySelectorAll('button[data-page]');
-
-  // Report page elements
-  const reportPage = document.getElementById('report-page');
-  const reportEmployeeSelect = document.getElementById('report-employee');
-  const reportMessageInput = document.getElementById('report-message');
-  const reportFileInput = document.getElementById('report-file');
-  const reportDateInput = document.getElementById('report-date');
-  const btnSendReport = document.getElementById('btn-send-report');
-  const reportList = document.getElementById('report-list');
-
-  // Payment page elements
-  const paymentPage = document.getElementById('payment-page');
-  const paymentEmployeeSelect = document.getElementById('payment-employee');
-  const paymentAmountInput = document.getElementById('payment-amount');
-  const paymentNoteInput = document.getElementById('payment-note');
-  const paymentDateInput = document.getElementById('payment-date');
-  const btnSendPayment = document.getElementById('btn-send-payment');
-  const paymentList = document.getElementById('payment-list');
-
-  // Notice page elements
-  const noticePage = document.getElementById('notice-page');
-  const noticeMessageInput = document.getElementById('notice-message');
-  const btnSendNotice = document.getElementById('btn-send-notice');
-  const noticeList = document.getElementById('notice-list');
-
-  // State
-  let currentUser = null;  // { role: 'admin' or 'user', username: string }
-
-  // Popup
-  const popup = document.getElementById('popup');
-  const popupMessage = document.getElementById('popup-message');
-  const popupClose = document.getElementById('popup-close');
-
-  function showPopup(msg) {
-    popupMessage.textContent = msg;
-    popup.classList.add('show');
+  function showPage(pageId) {
+    ['adminLogin','userLogin','adminDashboard','userDashboard'].forEach(id => {
+      document.getElementById(id).classList.add('hidden');
+    });
+    document.getElementById(pageId).classList.remove('hidden');
   }
-  popupClose.onclick = () => popup.classList.remove('show');
 
-  // Helpers
-  function setLoading(isLoading) {
-    if (isLoading) {
-      btnLogin.disabled = true;
-      btnUserLogin.disabled = true;
-      btnSendReport.disabled = true;
-      btnSendPayment.disabled = true;
-      btnSendNotice.disabled = true;
-      btnLogout.disabled = true;
+  function adminLogin() {
+    const user = document.getElementById('adminUser').value.trim();
+    const pass = document.getElementById('adminPass').value.trim();
+    if(user === 'vnbuyer' && pass === 'vnbuyer123') {
+      Swal.fire('Welcome Admin!');
+      showPage('adminDashboard');
     } else {
-      btnLogin.disabled = false;
-      btnUserLogin.disabled = false;
-      btnSendReport.disabled = false;
-      btnSendPayment.disabled = false;
-      btnSendNotice.disabled = false;
-      btnLogout.disabled = false;
+      Swal.fire('Error','Invalid Admin Login','error');
     }
   }
 
-  function clearInputs() {
-    reportMessageInput.value = "";
-    reportFileInput.value = "";
-    reportDateInput.value = "";
-    paymentAmountInput.value = "";
-    paymentNoteInput.value = "";
-    paymentDateInput.value = "";
-    noticeMessageInput.value = "";
+  async function userLogin() {
+    const key = document.getElementById('userKey').value.trim();
+    if (!key) return Swal.fire('Enter your key');
+    Swal.fire('Welcome!');
+    loadUserData(key);
+    showPage('userDashboard');
   }
 
-  function showPage(page) {
-    [reportPage, paymentPage, noticePage].forEach(p => p.classList.add('hidden'));
-    if(page === 'report') reportPage.classList.remove('hidden');
-    if(page === 'payment') paymentPage.classList.remove('hidden');
-    if(page === 'notice') noticePage.classList.remove('hidden');
+  async function sendReport() {
+    const toUser = rUser.value.trim();
+    const message = rMsg.value.trim();
+    const date = new Date().toLocaleDateString();
+    await db.collection("reports").add({toUser, message, date});
+    Swal.fire('Report Sent');
+  }
 
-    navButtons.forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.page === page);
+  async function sendPayment() {
+    const toUser = pUser.value.trim();
+    const amount = pAmt.value.trim();
+    const note = pNote.value.trim();
+    const date = new Date().toLocaleDateString();
+    await db.collection("payments").add({toUser, amount, note, date});
+    Swal.fire('Payment Sent');
+  }
+
+  async function sendNotice() {
+    const message = nMsg.value.trim();
+    const date = new Date().toLocaleDateString();
+    await db.collection("notices").add({message, date});
+    Swal.fire('Notice Sent');
+  }
+
+  async function loadUserData(key) {
+    const reportList = document.getElementById('reportList');
+    const paymentList = document.getElementById('paymentList');
+    const noticeList = document.getElementById('noticeList');
+    reportList.innerHTML = '';
+    paymentList.innerHTML = '';
+    noticeList.innerHTML = '';
+
+    const rSnap = await db.collection("reports").where("toUser","==",key).get();
+    rSnap.forEach(doc => {
+      const d = doc.data();
+      reportList.innerHTML += `<li>${d.date}: ${d.message}</li>`;
     });
 
-    pageTitle.textContent = page.charAt(0).toUpperCase() + page.slice(1) + (currentUser.role === 'admin' ? " (Admin)" : " (Employee)");
-  }
+    const pSnap = await db.collection("payments").where("toUser","==",key).get();
+    pSnap.forEach(doc => {
+      const d = doc.data();
+      paymentList.innerHTML += `<li>${d.date}: ৳${d.amount} - ${d.note}</li>`;
+    });
 
-  // Populate employee selects for admin pages
-  async function loadEmployees() {
-    try {
-      const res = await fetch(`${API_URL}?sheet=Users&action=getAll`);
-      const json = await res.json();
-      if(json.status === "success" && Array.isArray(json.data)) {
-        // Clear selects
-        [reportEmployeeSelect, paymentEmployeeSelect].forEach(sel => {
-          sel.innerHTML = '<option value="" disabled selected>Select Employee</option>';
-        });
-        json.data.forEach(emp => {
-          const option = document.createElement('option');
-          option.value = emp.username;
-          option.textContent = emp.username;
-          reportEmployeeSelect.appendChild(option.cloneNode(true));
-          paymentEmployeeSelect.appendChild(option.cloneNode(true));
-        });
-      }
-    } catch (e) {
-      showPopup("Error loading employees: " + e.message);
-    }
-  }
-
-  // Login Handlers
-  btnLogin.onclick = async () => {
-    const username = loginUsernameInput.value.trim();
-    const password = loginPasswordInput.value.trim();
-    if (!username || !password) return showPopup("Enter admin username and password");
-    setLoading(true);
-    try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ sheet: "Admin", action: "login", username, password })
-      });
-      const json = await res.json();
-      if (json.status === "success" && json.role === "admin") {
-        currentUser = { role: "admin", username };
-        loginLayer.classList.add('hidden');
-        navLayer.classList.remove('hidden');
-        clearInputs();
-        await loadEmployees();
-        showPage("report");
-      } else {
-        showPopup(json.message || "Admin login failed");
-      }
-    } catch (e) {
-      showPopup("Network error: " + e.message);
-    }
-    setLoading(false);
-  };
-
-  btnUserLogin.onclick = async () => {
-    const key = userKeyInput.value.trim();
-    if (!key) return showPopup("Enter your employee key");
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_URL}?sheet=Users&action=checkKey&key=${encodeURIComponent(key)}`);
-      const json = await res.json();
-      if (json.status === "success") {
-        currentUser = { role: "user", username: json.username };
-        loginLayer.classList.add('hidden');
-        navLayer.classList.remove('hidden');
-        clearInputs();
-        showPage("report");
-        loadUserData();
-      } else {
-        showPopup(json.message || "Invalid key");
-      }
-    } catch (e) {
-      showPopup("Network error: " + e.message);
-    }
-    setLoading(false);
-  };
-
-  btnLogout.onclick = () => {
-    currentUser = null;
-    loginLayer.classList.remove('hidden');
-    navLayer.classList.add('hidden');
-    clearInputs();
-    reportList.innerHTML = "";
-    paymentList.innerHTML = "";
-    noticeList.innerHTML = "";
-    userKeyInput.value = "";
-    loginUsernameInput.value = "";
-    loginPasswordInput.value = "";
-    pageTitle.textContent = "Login";
-  };
-
-  // Navigation buttons
-  navButtons.forEach(btn => {
-    btn.onclick = () => {
-      showPage(btn.dataset.page);
-      if(currentUser.role === 'user') {
-        loadUserData(btn.dataset.page);
-      }
-    };
-  });
-
-  // Send Report (admin only)
-  btnSendReport.onclick = async () => {
-    if(currentUser.role !== "admin") return showPopup("Only admin can send reports");
-    const toUser = reportEmployeeSelect.value;
-    const message = reportMessageInput.value.trim();
-    const fileContent = reportFileInput.value.trim();
-    const date = reportDateInput.value;
-    if(!toUser || !message || !date) return showPopup("Please fill all required report fields");
-    setLoading(true);
-    try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: {"Content-Type": "application/x-www-form-urlencoded"},
-        body: new URLSearchParams({
-          sheet: "Report",
-          action: "send",
-          toUser,
-          message,
-          fileContent,
-          date
-        })
-      });
-      const json = await res.json();
-      if(json.status === "success") {
-        showPopup("Report sent successfully");
-        reportMessageInput.value = "";
-        reportFileInput.value = "";
-        reportDateInput.value = "";
-        if(currentUser.role === 'admin' && toUser === currentUser.username) loadUserData('report');
-      } else {
-        showPopup(json.message || "Failed to send report");
-      }
-    } catch(e) {
-      showPopup("Network error: " + e.message);
-    }
-    setLoading(false);
-  };
-
-  // Send Payment (admin only)
-  btnSendPayment.onclick = async () => {
-    if(currentUser.role !== "admin") return showPopup("Only admin can add payments");
-    const toUser = paymentEmployeeSelect.value;
-    const amount = paymentAmountInput.value.trim();
-    const note = paymentNoteInput.value.trim();
-    const date = paymentDateInput.value;
-    if(!toUser || !amount || !date) return showPopup("Please fill all required payment fields");
-    setLoading(true);
-    try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: {"Content-Type": "application/x-www-form-urlencoded"},
-        body: new URLSearchParams({
-          sheet: "Payment",
-          action: "send",
-          toUser,
-          amount,
-          note,
-          date
-        })
-      });
-      const json = await res.json();
-      if(json.status === "success") {
-        showPopup("Payment added successfully");
-        paymentAmountInput.value = "";
-        paymentNoteInput.value = "";
-        paymentDateInput.value = "";
-        if(currentUser.role === 'admin' && toUser === currentUser.username) loadUserData('payment');
-      } else {
-        showPopup(json.message || "Failed to add payment");
-      }
-    } catch(e) {
-      showPopup("Network error: " + e.message);
-    }
-    setLoading(false);
-  };
-
-  // Send Notice (admin only)
-  btnSendNotice.onclick = async () => {
-    if(currentUser.role !== "admin") return showPopup("Only admin can send notices");
-    const message = noticeMessageInput.value.trim();
-    if(!message) return showPopup("Notice message cannot be empty");
-    setLoading(true);
-    try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: {"Content-Type": "application/x-www-form-urlencoded"},
-        body: new URLSearchParams({
-          sheet: "Notice",
-          action: "send",
-          message
-        })
-      });
-      const json = await res.json();
-      if(json.status === "success") {
-        showPopup("Notice sent successfully");
-        noticeMessageInput.value = "";
-        loadNotices();
-      } else {
-        showPopup(json.message || "Failed to send notice");
-      }
-    } catch(e) {
-      showPopup("Network error: " + e.message);
-    }
-    setLoading(false);
-  };
-
-  // Load user data (reports/payments/notices)
-  async function loadUserData(page = "report") {
-    if (!currentUser) return;
-    try {
-      if(page === "report") {
-        const res = await fetch(`${API_URL}?sheet=Report&action=get&username=${encodeURIComponent(currentUser.username)}`);
-        const json = await res.json();
-        if(json.status === "success") {
-          reportList.innerHTML = "";
-          if(json.data.length === 0) reportList.innerHTML = "<i>No reports found</i>";
-          json.data.forEach(item => {
-            const div = document.createElement('div');
-            div.className = "message-item";
-            div.innerHTML = `<div class="message-date">${item.date}</div><div>${escapeHtml(item.message)}</div><pre style="background:#3c3c6d; padding:6px; border-radius:6px; white-space: pre-wrap;">${escapeHtml(item.file)}</pre>`;
-            reportList.appendChild(div);
-          });
-        }
-      } else if(page === "payment") {
-        const res = await fetch(`${API_URL}?sheet=Payment&action=get&username=${encodeURIComponent(currentUser.username)}`);
-        const json = await res.json();
-        if(json.status === "success") {
-          paymentList.innerHTML = "";
-          if(json.data.length === 0) paymentList.innerHTML = "<i>No payments found</i>";
-          json.data.forEach(item => {
-            const div = document.createElement('div');
-            div.className = "message-item";
-            div.innerHTML = `<div class="message-date">${item.date}</div><div>Amount: ${escapeHtml(item.amount)}<br/>Note: ${escapeHtml(item.note)}</div>`;
-            paymentList.appendChild(div);
-          });
-        }
-      } else if(page === "notice") {
-        loadNotices();
-      }
-    } catch(e) {
-      showPopup("Error loading data: " + e.message);
-    }
-  }
-
-  // Load all notices (everyone can see)
-  async function loadNotices() {
-    try {
-      const res = await fetch(`${API_URL}?sheet=Notice&action=get`);
-      const json = await res.json();
-      if(json.status === "success") {
-        noticeList.innerHTML = "";
-        if(json.data.length === 0) noticeList.innerHTML = "<i>No notices found</i>";
-        json.data.forEach(item => {
-          const div = document.createElement('div');
-          div.className = "message-item";
-          div.innerHTML = `<div class="message-date">${item.date}</div><div>${escapeHtml(item.message)}</div>`;
-          noticeList.appendChild(div);
-        });
-      }
-    } catch(e) {
-      showPopup("Error loading notices: " + e.message);
-    }
-  }
-
-  // Escape HTML to prevent XSS
-  function escapeHtml(text) {
-    return text.replace(/[&<>"']/g, function(m) {
-      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
+    const nSnap = await db.collection("notices").get();
+    nSnap.forEach(doc => {
+      const d = doc.data();
+      noticeList.innerHTML += `<li>${d.date}: ${d.message}</li>`;
     });
   }
 
-  // Initial focus
-  loginUsernameInput.focus();
-
-})();
+  window.onload = () => {
+    document.getElementById('nav').classList.remove('hidden');
+    showPage('adminLogin');
+  }
 </script>
+
 </body>
 </html>
