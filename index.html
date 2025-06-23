@@ -3,637 +3,604 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Employee Dashboard - Multi-Page UI</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <title>Employees Dashboard</title>
   <style>
-    /* Glassmorphic body background */
+    /* Basic Reset and Styles */
+    * {
+      box-sizing: border-box;
+    }
     body {
-      min-height: 100vh;
-      background: linear-gradient(135deg, #667eea, #764ba2);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #f0f4f8;
+      background: linear-gradient(135deg, #667eea, #764ba2);
       margin: 0;
-      padding: 0;
+      color: #fff;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 1rem;
+      padding: 20px;
     }
-
-    /* Container */
     #app {
-      background: rgba(255 255 255 / 0.1);
-      backdrop-filter: blur(20px);
-      border-radius: 20px;
-      width: 100%;
-      max-width: 600px;
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-      padding: 2rem;
-      box-sizing: border-box;
-      user-select: none;
-      display: flex;
-      flex-direction: column;
-      min-height: 90vh;
-    }
-
-    /* Header */
-    h1, h2 {
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      margin: 0 0 1rem 0;
-      user-select: none;
-      text-align: center;
-      color: #e0e7ff;
-    }
-
-    /* Login Panel */
-    #login-panel {
-      max-width: 400px;
-      margin: auto;
-    }
-
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 0.25rem;
-      color: #cbd5e1;
-    }
-    input[type="text"],
-    input[type="password"],
-    input[type="date"],
-    input[type="number"] {
-      width: 100%;
-      padding: 0.6rem 1rem;
+      background: #1f1f38;
       border-radius: 12px;
-      border: 1.5px solid rgba(255 255 255 / 0.3);
-      background: rgba(255 255 255 / 0.1);
-      color: #f8fafc;
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      transition: border-color 0.3s ease;
-      outline-offset: 2px;
-    }
-    input[type="text"]:focus,
-    input[type="password"]:focus,
-    input[type="date"]:focus,
-    input[type="number"]:focus {
-      border-color: #a78bfa;
-      background: rgba(255 255 255 / 0.15);
-    }
-
-    button {
-      padding: 0.75rem 0;
-      border-radius: 14px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: white;
-      border: none;
-      cursor: pointer;
-      user-select: none;
-      margin-top: 0.3rem;
-      margin-bottom: 1rem;
-      transition: background-color 0.3s ease, transform 0.2s ease;
+      max-width: 450px;
       width: 100%;
+      padding: 30px 25px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      position: relative;
     }
-    button:active {
-      transform: scale(0.96);
+    h2 {
+      margin-top: 0;
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 25px;
+      letter-spacing: 1.5px;
+      user-select: none;
     }
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+    input[type="text"], input[type="password"], input[type="date"], textarea, select {
+      width: 100%;
+      padding: 12px 14px;
+      margin: 8px 0 20px 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      outline: none;
+      transition: background-color 0.3s ease;
+      user-select: text;
     }
-    .btn-green {
-      background: linear-gradient(90deg, #4ade80, #16a34a);
-      box-shadow: 0 8px 30px #22c55eaa;
+    input[type="text"]:focus, input[type="password"]:focus, input[type="date"]:focus, textarea:focus, select:focus {
+      background-color: #3c3c6d;
+      color: #fff;
     }
-    .btn-green:hover:not(:disabled) {
-      background: linear-gradient(90deg, #22c55e, #15803d);
+    button {
+      background: #764ba2;
+      color: white;
+      font-weight: 700;
+      border: none;
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 18px;
+      letter-spacing: 1.2px;
+      transition: background-color 0.3s ease;
+      user-select: none;
     }
-    .btn-yellow {
-      background: linear-gradient(90deg, #facc15, #ca8a04);
-      box-shadow: 0 8px 30px #eab308aa;
+    button:hover {
+      background: #a66bd8;
     }
-    .btn-yellow:hover:not(:disabled) {
-      background: linear-gradient(90deg, #ca8a04, #a16207);
-    }
-    .btn-purple {
-      background: linear-gradient(90deg, #a78bfa, #7c3aed);
-      box-shadow: 0 8px 30px #8b5cf6aa;
-    }
-    .btn-purple:hover:not(:disabled) {
-      background: linear-gradient(90deg, #7c3aed, #5b21b6);
-    }
-
-    /* Tabs Nav */
-    .tabs {
+    nav {
       display: flex;
       justify-content: space-around;
-      margin-bottom: 1rem;
-      border-bottom: 2px solid rgba(255 255 255 / 0.25);
+      margin-bottom: 25px;
       user-select: none;
     }
-    .tab {
-      padding: 0.6rem 1.2rem;
-      cursor: pointer;
-      border-radius: 12px 12px 0 0;
-      color: #cbd5e1;
-      transition: background-color 0.3s ease, color 0.3s ease;
+    nav button {
+      width: auto;
+      background: transparent;
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 15px;
       font-weight: 600;
+      color: #cbbde1;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
     }
-    .tab.active {
-      background: rgba(255 255 255 / 0.15);
-      color: #ede9fe;
-      box-shadow: 0 -3px 15px #a78bfaaa;
+    nav button.active,
+    nav button:hover {
+      background: #a66bd8;
+      border-color: #7c50b0;
+      color: #fff;
+      box-shadow: 0 0 8px #a66bd8aa;
     }
-    .tab:hover:not(.active) {
-      color: #ede9fe;
+    .hidden {
+      display: none !important;
     }
-
-    /* Panels */
-    .panel {
-      flex-grow: 1;
+    .message-list {
+      max-height: 250px;
       overflow-y: auto;
-      padding: 0.5rem 0;
-      display: none;
-      opacity: 0;
-      transition: opacity 0.3s ease;
+      background: #2a2a52;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 14px;
+      user-select: text;
     }
-    .panel.active {
-      display: block;
-      opacity: 1;
+    .message-item {
+      margin-bottom: 12px;
+      border-bottom: 1px solid #3f3f7e;
+      padding-bottom: 8px;
     }
-
-    /* Card style */
-    .card {
-      background: rgba(255 255 255 / 0.12);
-      border-radius: 14px;
-      padding: 1rem 1.5rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 8px 24px rgb(111 66 193 / 0.3);
-      color: #e0e7ff;
-      transition: box-shadow 0.3s ease;
+    .message-item:last-child {
+      border-bottom: none;
     }
-    .card:hover {
-      box-shadow: 0 16px 48px rgb(167 139 250 / 0.45);
+    .message-date {
+      font-size: 12px;
+      opacity: 0.6;
+      margin-bottom: 4px;
+      user-select: none;
     }
-    .card b {
-      color: #ede9fe;
+    /* Popup Styles */
+    #popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: #4a3c8c;
+      padding: 25px 35px;
+      border-radius: 15px;
+      box-shadow: 0 0 25px #a66bd8aa;
+      color: white;
+      font-weight: 600;
+      font-size: 17px;
+      text-align: center;
+      user-select: none;
+      z-index: 9999;
+      transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      max-width: 80vw;
+      word-break: break-word;
     }
-
-    /* Scrollbar */
-    .panel::-webkit-scrollbar {
-      width: 6px;
+    #popup.show {
+      transform: translate(-50%, -50%) scale(1);
     }
-    .panel::-webkit-scrollbar-thumb {
-      background: #a78bfa;
-      border-radius: 20px;
+    #popup button {
+      margin-top: 20px;
+      background: #a66bd8;
+      padding: 8px 18px;
+      font-size: 15px;
+      border-radius: 12px;
+      user-select: none;
     }
   </style>
 </head>
 <body>
-
   <div id="app">
-    <!-- LOGIN -->
-    <div id="login-panel">
-      <h1>Login</h1>
-      <label for="username">Admin Username or User Key</label>
-      <input type="text" id="username" placeholder="Admin username or user key" autocomplete="off" spellcheck="false" />
-      <label for="password">Password (Admin only)</label>
-      <input type="password" id="password" placeholder="Admin password" autocomplete="off" spellcheck="false" />
-      <button id="login-btn" class="btn-green" onclick="login()">Login</button>
+    <h2 id="page-title">Login</h2>
+
+    <!-- Login Form -->
+    <div id="login-layer">
+      <input type="text" id="login-username" placeholder="Admin Username (e.g. vnbuyer)" autocomplete="off" />
+      <input type="password" id="login-password" placeholder="Admin Password" autocomplete="off" />
+      <button id="btn-login">Login as Admin</button>
+      <hr style="margin: 20px 0; border-color: #4e4e83;" />
+      <input type="text" id="user-key" placeholder="Employee Key (for users)" autocomplete="off" />
+      <button id="btn-user-login">Login as Employee</button>
     </div>
 
-    <!-- MAIN APP -->
-    <div id="main-app" style="display:none; flex-direction: column; height: 100%;">
-      <h2 id="welcome-msg" style="text-align:center;"></h2>
+    <!-- Navigation -->
+    <nav id="nav-layer" class="hidden">
+      <button data-page="report" class="active">Reports</button>
+      <button data-page="payment">Payments</button>
+      <button data-page="notice">Notices</button>
+      <button id="btn-logout" style="background:#a65454;">Logout</button>
+    </nav>
 
-      <!-- Tabs navigation -->
-      <div class="tabs" id="tabs">
-        <div class="tab active" data-tab="reports" onclick="switchTab('reports')">Reports</div>
-        <div class="tab" data-tab="payments" onclick="switchTab('payments')">Payments</div>
-        <div class="tab" data-tab="notices" onclick="switchTab('notices')">Notices</div>
-        <div class="tab" data-tab="users" onclick="switchTab('users')">Users</div>
-        <div class="tab" style="color:#f87171;" onclick="logout()">Logout</div>
-      </div>
+    <!-- Content Layers -->
+    <div id="content">
 
-      <!-- Panels -->
-      <div id="reports" class="panel active">
-        <h3>Your Reports</h3>
-        <div id="reports-list">Loading...</div>
-        <!-- Admin form -->
-        <div id="admin-report-form" style="margin-top: 1rem;"></div>
-      </div>
+      <!-- Report Page -->
+      <section id="report-page" class="page-layer">
+        <h3>Send Report</h3>
+        <select id="report-employee" required>
+          <option value="" disabled selected>Select Employee</option>
+        </select>
+        <textarea id="report-message" placeholder="Enter report message..." rows="4" required></textarea>
+        <textarea id="report-file" placeholder="Paste TXT file content here (optional)" rows="3"></textarea>
+        <input type="date" id="report-date" required />
+        <button id="btn-send-report">Send Report</button>
 
-      <div id="payments" class="panel">
-        <h3>Your Payments</h3>
-        <div id="payments-list">Loading...</div>
-        <div id="admin-payment-form" style="margin-top: 1rem;"></div>
-      </div>
+        <h4 style="margin-top:30px;">Your Reports</h4>
+        <div id="report-list" class="message-list"></div>
+      </section>
 
-      <div id="notices" class="panel">
-        <h3>Notices</h3>
-        <div id="notices-list">Loading...</div>
-        <div id="admin-notice-form" style="margin-top: 1rem;"></div>
-      </div>
+      <!-- Payment Page -->
+      <section id="payment-page" class="page-layer hidden">
+        <h3>Add Payment</h3>
+        <select id="payment-employee" required>
+          <option value="" disabled selected>Select Employee</option>
+        </select>
+        <input type="number" id="payment-amount" placeholder="Amount" min="1" required />
+        <input type="text" id="payment-note" placeholder="Note (optional)" />
+        <input type="date" id="payment-date" required />
+        <button id="btn-send-payment">Add Payment</button>
 
-      <div id="users" class="panel" style="display:none;">
-        <h3>User Management</h3>
-        <div id="admin-users-list">Loading...</div>
-        <div id="admin-user-form" style="margin-top: 1rem;"></div>
-      </div>
+        <h4 style="margin-top:30px;">Your Payments</h4>
+        <div id="payment-list" class="message-list"></div>
+      </section>
+
+      <!-- Notice Page -->
+      <section id="notice-page" class="page-layer hidden">
+        <h3>Send Notice (Admin Only)</h3>
+        <textarea id="notice-message" placeholder="Enter notice message..." rows="4"></textarea>
+        <button id="btn-send-notice">Send Notice</button>
+
+        <h4 style="margin-top:30px;">All Notices</h4>
+        <div id="notice-list" class="message-list"></div>
+      </section>
+
     </div>
   </div>
 
+  <!-- Popup -->
+  <div id="popup" class="">
+    <div id="popup-message"></div>
+    <button id="popup-close">Close</button>
+  </div>
+
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbxNxxIIxY4_TPXRdQrWpxCFZJqhaRpYqpQafMkkD2jWhji0-0pCkio8ZEZjRzzKK4po1A/exec";
+(() => {
+  const API_URL = "https://script.google.com/macros/s/AKfycbzsKdCaM3eche8XtwntOQSVxZqdveOK4tiyN8ZDt-KRw5HMwpIB8wugsx8z9qhe-eCiUg/exec";
 
-  let currentUser = null; // username/key
-  let isAdmin = false;
+  // Elements
+  const app = document.getElementById('app');
+  const loginLayer = document.getElementById('login-layer');
+  const navLayer = document.getElementById('nav-layer');
+  const pageTitle = document.getElementById('page-title');
 
-  // Switch between tabs
-  function switchTab(tabName) {
-    const tabs = document.querySelectorAll('.tab');
-    const panels = document.querySelectorAll('.panel');
+  const userKeyInput = document.getElementById('user-key');
+  const loginUsernameInput = document.getElementById('login-username');
+  const loginPasswordInput = document.getElementById('login-password');
 
-    tabs.forEach(t => {
-      t.classList.toggle('active', t.dataset.tab === tabName);
-    });
-    panels.forEach(p => {
-      p.classList.toggle('active', p.id === tabName);
-    });
+  const btnLogin = document.getElementById('btn-login');
+  const btnUserLogin = document.getElementById('btn-user-login');
+  const btnLogout = document.getElementById('btn-logout');
+
+  const navButtons = navLayer.querySelectorAll('button[data-page]');
+
+  // Report page elements
+  const reportPage = document.getElementById('report-page');
+  const reportEmployeeSelect = document.getElementById('report-employee');
+  const reportMessageInput = document.getElementById('report-message');
+  const reportFileInput = document.getElementById('report-file');
+  const reportDateInput = document.getElementById('report-date');
+  const btnSendReport = document.getElementById('btn-send-report');
+  const reportList = document.getElementById('report-list');
+
+  // Payment page elements
+  const paymentPage = document.getElementById('payment-page');
+  const paymentEmployeeSelect = document.getElementById('payment-employee');
+  const paymentAmountInput = document.getElementById('payment-amount');
+  const paymentNoteInput = document.getElementById('payment-note');
+  const paymentDateInput = document.getElementById('payment-date');
+  const btnSendPayment = document.getElementById('btn-send-payment');
+  const paymentList = document.getElementById('payment-list');
+
+  // Notice page elements
+  const noticePage = document.getElementById('notice-page');
+  const noticeMessageInput = document.getElementById('notice-message');
+  const btnSendNotice = document.getElementById('btn-send-notice');
+  const noticeList = document.getElementById('notice-list');
+
+  // State
+  let currentUser = null;  // { role: 'admin' or 'user', username: string }
+
+  // Popup
+  const popup = document.getElementById('popup');
+  const popupMessage = document.getElementById('popup-message');
+  const popupClose = document.getElementById('popup-close');
+
+  function showPopup(msg) {
+    popupMessage.textContent = msg;
+    popup.classList.add('show');
+  }
+  popupClose.onclick = () => popup.classList.remove('show');
+
+  // Helpers
+  function setLoading(isLoading) {
+    if (isLoading) {
+      btnLogin.disabled = true;
+      btnUserLogin.disabled = true;
+      btnSendReport.disabled = true;
+      btnSendPayment.disabled = true;
+      btnSendNotice.disabled = true;
+      btnLogout.disabled = true;
+    } else {
+      btnLogin.disabled = false;
+      btnUserLogin.disabled = false;
+      btnSendReport.disabled = false;
+      btnSendPayment.disabled = false;
+      btnSendNotice.disabled = false;
+      btnLogout.disabled = false;
+    }
   }
 
-  // Show login panel only
-  function showLogin() {
-    document.getElementById("login-panel").style.display = "block";
-    document.getElementById("main-app").style.display = "none";
+  function clearInputs() {
+    reportMessageInput.value = "";
+    reportFileInput.value = "";
+    reportDateInput.value = "";
+    paymentAmountInput.value = "";
+    paymentNoteInput.value = "";
+    paymentDateInput.value = "";
+    noticeMessageInput.value = "";
+  }
+
+  function showPage(page) {
+    [reportPage, paymentPage, noticePage].forEach(p => p.classList.add('hidden'));
+    if(page === 'report') reportPage.classList.remove('hidden');
+    if(page === 'payment') paymentPage.classList.remove('hidden');
+    if(page === 'notice') noticePage.classList.remove('hidden');
+
+    navButtons.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.page === page);
+    });
+
+    pageTitle.textContent = page.charAt(0).toUpperCase() + page.slice(1) + (currentUser.role === 'admin' ? " (Admin)" : " (Employee)");
+  }
+
+  // Populate employee selects for admin pages
+  async function loadEmployees() {
+    try {
+      const res = await fetch(`${API_URL}?sheet=Users&action=getAll`);
+      const json = await res.json();
+      if(json.status === "success" && Array.isArray(json.data)) {
+        // Clear selects
+        [reportEmployeeSelect, paymentEmployeeSelect].forEach(sel => {
+          sel.innerHTML = '<option value="" disabled selected>Select Employee</option>';
+        });
+        json.data.forEach(emp => {
+          const option = document.createElement('option');
+          option.value = emp.username;
+          option.textContent = emp.username;
+          reportEmployeeSelect.appendChild(option.cloneNode(true));
+          paymentEmployeeSelect.appendChild(option.cloneNode(true));
+        });
+      }
+    } catch (e) {
+      showPopup("Error loading employees: " + e.message);
+    }
+  }
+
+  // Login Handlers
+  btnLogin.onclick = async () => {
+    const username = loginUsernameInput.value.trim();
+    const password = loginPasswordInput.value.trim();
+    if (!username || !password) return showPopup("Enter admin username and password");
+    setLoading(true);
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ sheet: "Admin", action: "login", username, password })
+      });
+      const json = await res.json();
+      if (json.status === "success" && json.role === "admin") {
+        currentUser = { role: "admin", username };
+        loginLayer.classList.add('hidden');
+        navLayer.classList.remove('hidden');
+        clearInputs();
+        await loadEmployees();
+        showPage("report");
+      } else {
+        showPopup(json.message || "Admin login failed");
+      }
+    } catch (e) {
+      showPopup("Network error: " + e.message);
+    }
+    setLoading(false);
+  };
+
+  btnUserLogin.onclick = async () => {
+    const key = userKeyInput.value.trim();
+    if (!key) return showPopup("Enter your employee key");
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}?sheet=Users&action=checkKey&key=${encodeURIComponent(key)}`);
+      const json = await res.json();
+      if (json.status === "success") {
+        currentUser = { role: "user", username: json.username };
+        loginLayer.classList.add('hidden');
+        navLayer.classList.remove('hidden');
+        clearInputs();
+        showPage("report");
+        loadUserData();
+      } else {
+        showPopup(json.message || "Invalid key");
+      }
+    } catch (e) {
+      showPopup("Network error: " + e.message);
+    }
+    setLoading(false);
+  };
+
+  btnLogout.onclick = () => {
     currentUser = null;
-    isAdmin = false;
-  }
+    loginLayer.classList.remove('hidden');
+    navLayer.classList.add('hidden');
+    clearInputs();
+    reportList.innerHTML = "";
+    paymentList.innerHTML = "";
+    noticeList.innerHTML = "";
+    userKeyInput.value = "";
+    loginUsernameInput.value = "";
+    loginPasswordInput.value = "";
+    pageTitle.textContent = "Login";
+  };
 
-  // Show main app panel
-  function showMainApp() {
-    document.getElementById("login-panel").style.display = "none";
-    document.getElementById("main-app").style.display = "flex";
-  }
-
-  // Login function
-  async function login() {
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value;
-
-    if (!username) {
-      Swal.fire("Error", "Please enter username or key", "error");
-      return;
-    }
-
-    Swal.showLoading();
-
-    try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "login", username, password })
-      });
-      const data = await res.json();
-      Swal.close();
-
-      if (!data.success) {
-        Swal.fire("Login Failed", data.message || "Invalid credentials", "error");
-        return;
+  // Navigation buttons
+  navButtons.forEach(btn => {
+    btn.onclick = () => {
+      showPage(btn.dataset.page);
+      if(currentUser.role === 'user') {
+        loadUserData(btn.dataset.page);
       }
-
-      currentUser = username;
-      isAdmin = data.role === "admin";
-
-      // Show welcome message
-      document.getElementById("welcome-msg").textContent = isAdmin 
-        ? `Welcome Admin: ${currentUser}`
-        : `Welcome User: ${currentUser}`;
-
-      // Show main app
-      showMainApp();
-
-      // Load data for the first tab (Reports)
-      await loadReports();
-      await loadPayments();
-      await loadNotices();
-      if (isAdmin) {
-        await loadUsers();
-        showAdminForms();
-      } else {
-        hideAdminForms();
-      }
-
-    } catch (err) {
-      Swal.close();
-      Swal.fire("Error", "Network error or server issue", "error");
-    }
-  }
-
-  // Load Reports for current user
-  async function loadReports() {
-    document.getElementById("reports-list").innerHTML = "Loading...";
-    try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "getReports", username: currentUser })
-      });
-      const data = await res.json();
-      if (data.success && data.reports) {
-        if (data.reports.length === 0) {
-          document.getElementById("reports-list").innerHTML = '<p class="italic text-gray-300">No reports found.</p>';
-        } else {
-          document.getElementById("reports-list").innerHTML = data.reports.map(r => `
-            <div class="card">
-              <b>Date:</b> ${r.date}<br/>
-              <b>Message:</b> ${r.message}<br/>
-              ${r.file ? `<b>File:</b> <a href="${r.file}" target="_blank" class="underline text-indigo-400">Open</a>` : ""}
-            </div>
-          `).join("");
-        }
-      } else {
-        document.getElementById("reports-list").innerHTML = `<p class="italic text-red-400">${data.message || "Failed to load reports"}</p>`;
-      }
-    } catch {
-      document.getElementById("reports-list").innerHTML = `<p class="italic text-red-400">Network error loading reports</p>`;
-    }
-  }
-
-  // Load Payments for current user
-  async function loadPayments() {
-    document.getElementById("payments-list").innerHTML = "Loading...";
-    try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "getPayments", username: currentUser })
-      });
-      const data = await res.json();
-      if (data.success && data.payments) {
-        if (data.payments.length === 0) {
-          document.getElementById("payments-list").innerHTML = '<p class="italic text-gray-300">No payments found.</p>';
-        } else {
-          document.getElementById("payments-list").innerHTML = data.payments.map(p => `
-            <div class="card">
-              <b>Date:</b> ${p.date}<br/>
-              <b>Amount:</b> ${p.amount}<br/>
-              <b>Note:</b> ${p.note || "-"}
-            </div>
-          `).join("");
-        }
-      } else {
-        document.getElementById("payments-list").innerHTML = `<p class="italic text-red-400">${data.message || "Failed to load payments"}</p>`;
-      }
-    } catch {
-      document.getElementById("payments-list").innerHTML = `<p class="italic text-red-400">Network error loading payments</p>`;
-    }
-  }
-
-  // Load Notices (all users)
-  async function loadNotices() {
-    document.getElementById("notices-list").innerHTML = "Loading...";
-    try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "getNotices" })
-      });
-      const data = await res.json();
-      if (data.success && data.notices) {
-        if (data.notices.length === 0) {
-          document.getElementById("notices-list").innerHTML = '<p class="italic text-gray-300">No notices found.</p>';
-        } else {
-          document.getElementById("notices-list").innerHTML = data.notices.map(n => `
-            <div class="card">
-              <b>Date:</b> ${n.date}<br/>
-              <b>Message:</b> ${n.message}
-            </div>
-          `).join("");
-        }
-      } else {
-        document.getElementById("notices-list").innerHTML = `<p class="italic text-red-400">${data.message || "Failed to load notices"}</p>`;
-      }
-    } catch {
-      document.getElementById("notices-list").innerHTML = `<p class="italic text-red-400">Network error loading notices</p>`;
-    }
-  }
-
-  // Load Users (admin only)
-  async function loadUsers() {
-    document.getElementById("admin-users-list").innerHTML = "Loading...";
-    try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "getUsers" })
-      });
-      const data = await res.json();
-      if (data.success && data.users) {
-        if (data.users.length === 0) {
-          document.getElementById("admin-users-list").innerHTML = '<p class="italic text-gray-300">No users found.</p>';
-        } else {
-          document.getElementById("admin-users-list").innerHTML = data.users.map(u => `
-            <div class="card">
-              <b>Username:</b> ${u.username}<br/>
-              <b>Key:</b> ${u.key}
-            </div>
-          `).join("");
-        }
-      } else {
-        document.getElementById("admin-users-list").innerHTML = `<p class="italic text-red-400">${data.message || "Failed to load users"}</p>`;
-      }
-    } catch {
-      document.getElementById("admin-users-list").innerHTML = `<p class="italic text-red-400">Network error loading users</p>`;
-    }
-  }
-
-  // Show admin forms in each tab
-  function showAdminForms() {
-    // Report form
-    document.getElementById("admin-report-form").innerHTML = `
-      <h4 class="mt-4 mb-2">Send Report</h4>
-      <label for="r-name">Employee Name</label>
-      <input id="r-name" type="text" placeholder="Employee username" autocomplete="off" spellcheck="false" />
-      <label for="r-date">Date</label>
-      <input id="r-date" type="date" />
-      <label for="r-message">Message</label>
-      <textarea id="r-message" rows="3" placeholder="Report message" class="w-full rounded-lg p-2 mb-2 bg-transparent border border-gray-400 text-white"></textarea>
-      <label for="r-file">File URL (optional)</label>
-      <input id="r-file" type="text" placeholder="Paste file URL here" autocomplete="off" spellcheck="false" />
-      <button class="btn-purple" onclick="sendReport()">Send Report</button>
-    `;
-
-    // Payment form
-    document.getElementById("admin-payment-form").innerHTML = `
-      <h4 class="mt-4 mb-2">Send Payment</h4>
-      <label for="p-name">Employee Name</label>
-      <input id="p-name" type="text" placeholder="Employee username" autocomplete="off" spellcheck="false" />
-      <label for="p-date">Date</label>
-      <input id="p-date" type="date" />
-      <label for="p-amount">Amount</label>
-      <input id="p-amount" type="number" placeholder="Payment amount" autocomplete="off" />
-      <label for="p-note">Note (optional)</label>
-      <input id="p-note" type="text" placeholder="Note about payment" autocomplete="off" spellcheck="false" />
-      <button class="btn-purple" onclick="sendPayment()">Send Payment</button>
-    `;
-
-    // Notice form
-    document.getElementById("admin-notice-form").innerHTML = `
-      <h4 class="mt-4 mb-2">Send Notice</h4>
-      <label for="n-date">Date</label>
-      <input id="n-date" type="date" />
-      <label for="n-message">Notice Message</label>
-      <textarea id="n-message" rows="3" placeholder="Write notice here" class="w-full rounded-lg p-2 mb-2 bg-transparent border border-gray-400 text-white"></textarea>
-      <button class="btn-purple" onclick="sendNotice()">Send Notice</button>
-    `;
-
-    // User form
-    document.getElementById("admin-user-form").innerHTML = `
-      <h4 class="mt-4 mb-2">Add User</h4>
-      <label for="u-username">Username</label>
-      <input id="u-username" type="text" placeholder="Employee username" autocomplete="off" spellcheck="false" />
-      <label for="u-key">User Key</label>
-      <input id="u-key" type="text" placeholder="User login key" autocomplete="off" spellcheck="false" />
-      <button class="btn-purple" onclick="addUser()">Add User</button>
-    `;
-  }
-
-  // Hide admin forms for normal users
-  function hideAdminForms() {
-    document.getElementById("admin-report-form").innerHTML = "";
-    document.getElementById("admin-payment-form").innerHTML = "";
-    document.getElementById("admin-notice-form").innerHTML = "";
-    document.getElementById("admin-user-form").innerHTML = "";
-  }
+    };
+  });
 
   // Send Report (admin only)
-  async function sendReport() {
-    const name = document.getElementById("r-name").value.trim();
-    const date = document.getElementById("r-date").value;
-    const message = document.getElementById("r-message").value.trim();
-    const file = document.getElementById("r-file").value.trim();
-
-    if (!name || !date || !message) {
-      Swal.fire("Error", "Please fill Employee Name, Date, and Message", "error");
-      return;
-    }
-
-    Swal.showLoading();
+  btnSendReport.onclick = async () => {
+    if(currentUser.role !== "admin") return showPopup("Only admin can send reports");
+    const toUser = reportEmployeeSelect.value;
+    const message = reportMessageInput.value.trim();
+    const fileContent = reportFileInput.value.trim();
+    const date = reportDateInput.value;
+    if(!toUser || !message || !date) return showPopup("Please fill all required report fields");
+    setLoading(true);
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "addReport", name, date, message, file })
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: new URLSearchParams({
+          sheet: "Report",
+          action: "send",
+          toUser,
+          message,
+          fileContent,
+          date
+        })
       });
-      const text = await res.text();
-      Swal.close();
-
-      if (text.toLowerCase().includes("saved")) {
-        Swal.fire("Success", "Report sent successfully!", "success");
-        loadReports();
-        // Clear inputs
-        document.getElementById("r-name").value = "";
-        document.getElementById("r-date").value = "";
-        document.getElementById("r-message").value = "";
-        document.getElementById("r-file").value = "";
+      const json = await res.json();
+      if(json.status === "success") {
+        showPopup("Report sent successfully");
+        reportMessageInput.value = "";
+        reportFileInput.value = "";
+        reportDateInput.value = "";
+        if(currentUser.role === 'admin' && toUser === currentUser.username) loadUserData('report');
       } else {
-        Swal.fire("Error", text, "error");
+        showPopup(json.message || "Failed to send report");
       }
-    } catch {
-      Swal.close();
-      Swal.fire("Error", "Network error. Please try again.", "error");
+    } catch(e) {
+      showPopup("Network error: " + e.message);
     }
-  }
+    setLoading(false);
+  };
 
   // Send Payment (admin only)
-  async function sendPayment() {
-    const name = document.getElementById("p-name").value.trim();
-    const date = document.getElementById("p-date").value;
-    const amount = document.getElementById("p-amount").value.trim();
-    const note = document.getElementById("p-note").value.trim();
-
-    if (!name || !date || !amount) {
-      Swal.fire("Error", "Please fill Employee Name, Date, and Amount", "error");
-      return;
-    }
-
-    Swal.showLoading();
+  btnSendPayment.onclick = async () => {
+    if(currentUser.role !== "admin") return showPopup("Only admin can add payments");
+    const toUser = paymentEmployeeSelect.value;
+    const amount = paymentAmountInput.value.trim();
+    const note = paymentNoteInput.value.trim();
+    const date = paymentDateInput.value;
+    if(!toUser || !amount || !date) return showPopup("Please fill all required payment fields");
+    setLoading(true);
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "addPayment", name, date, amount, note })
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: new URLSearchParams({
+          sheet: "Payment",
+          action: "send",
+          toUser,
+          amount,
+          note,
+          date
+        })
       });
-      const text = await res.text();
-      Swal.close();
-
-      if (text.toLowerCase().includes("saved")) {
-        Swal.fire("Success", "Payment sent successfully!", "success");
-        loadPayments();
-        // Clear inputs
-        document.getElementById("p-name").value = "";
-        document.getElementById("p-date").value = "";
-        document.getElementById("p-amount").value = "";
-        document.getElementById("p-note").value = "";
+      const json = await res.json();
+      if(json.status === "success") {
+        showPopup("Payment added successfully");
+        paymentAmountInput.value = "";
+        paymentNoteInput.value = "";
+        paymentDateInput.value = "";
+        if(currentUser.role === 'admin' && toUser === currentUser.username) loadUserData('payment');
       } else {
-        Swal.fire("Error", text, "error");
+        showPopup(json.message || "Failed to add payment");
       }
-    } catch {
-      Swal.close();
-      Swal.fire("Error", "Network error. Please try again.", "error");
+    } catch(e) {
+      showPopup("Network error: " + e.message);
     }
-  }
+    setLoading(false);
+  };
 
   // Send Notice (admin only)
-  async function sendNotice() {
-    const date = document.getElementById("n-date").value;
-    const message = document.getElementById("n-message").value.trim();
-
-    if (!date || !message) {
-      Swal.fire("Error", "Please fill Date and Notice Message", "error");
-      return;
-    }
-
-    Swal.showLoading();
+  btnSendNotice.onclick = async () => {
+    if(currentUser.role !== "admin") return showPopup("Only admin can send notices");
+    const message = noticeMessageInput.value.trim();
+    if(!message) return showPopup("Notice message cannot be empty");
+    setLoading(true);
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "addNotice", date, message })
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: new URLSearchParams({
+          sheet: "Notice",
+          action: "send",
+          message
+        })
       });
-      const text = await res.text();
-      Swal.close();
-
-      if (text.toLowerCase().includes("saved")) {
-        Swal.fire("Success", "User added successfully!", "success");
-        loadUsers();
-        // Clear inputs
-        document.getElementById("u-username").value = "";
-        document.getElementById("u-key").value = "";
+      const json = await res.json();
+      if(json.status === "success") {
+        showPopup("Notice sent successfully");
+        noticeMessageInput.value = "";
+        loadNotices();
       } else {
-        Swal.fire("Error", text, "error");
+        showPopup(json.message || "Failed to send notice");
       }
-    } catch {
-      Swal.close();
-      Swal.fire("Error", "Network error. Please try again.", "error");
+    } catch(e) {
+      showPopup("Network error: " + e.message);
+    }
+    setLoading(false);
+  };
+
+  // Load user data (reports/payments/notices)
+  async function loadUserData(page = "report") {
+    if (!currentUser) return;
+    try {
+      if(page === "report") {
+        const res = await fetch(`${API_URL}?sheet=Report&action=get&username=${encodeURIComponent(currentUser.username)}`);
+        const json = await res.json();
+        if(json.status === "success") {
+          reportList.innerHTML = "";
+          if(json.data.length === 0) reportList.innerHTML = "<i>No reports found</i>";
+          json.data.forEach(item => {
+            const div = document.createElement('div');
+            div.className = "message-item";
+            div.innerHTML = `<div class="message-date">${item.date}</div><div>${escapeHtml(item.message)}</div><pre style="background:#3c3c6d; padding:6px; border-radius:6px; white-space: pre-wrap;">${escapeHtml(item.file)}</pre>`;
+            reportList.appendChild(div);
+          });
+        }
+      } else if(page === "payment") {
+        const res = await fetch(`${API_URL}?sheet=Payment&action=get&username=${encodeURIComponent(currentUser.username)}`);
+        const json = await res.json();
+        if(json.status === "success") {
+          paymentList.innerHTML = "";
+          if(json.data.length === 0) paymentList.innerHTML = "<i>No payments found</i>";
+          json.data.forEach(item => {
+            const div = document.createElement('div');
+            div.className = "message-item";
+            div.innerHTML = `<div class="message-date">${item.date}</div><div>Amount: ${escapeHtml(item.amount)}<br/>Note: ${escapeHtml(item.note)}</div>`;
+            paymentList.appendChild(div);
+          });
+        }
+      } else if(page === "notice") {
+        loadNotices();
+      }
+    } catch(e) {
+      showPopup("Error loading data: " + e.message);
     }
   }
 
-  // Logout
-  function logout() {
-    Swal.fire({
-      title: "Logout?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes, logout",
-      cancelButtonText: "Cancel"
-    }).then(result => {
-      if (result.isConfirmed) {
-        showLogin();
-        document.getElementById("username").value = "";
-        document.getElementById("password").value = "";
+  // Load all notices (everyone can see)
+  async function loadNotices() {
+    try {
+      const res = await fetch(`${API_URL}?sheet=Notice&action=get`);
+      const json = await res.json();
+      if(json.status === "success") {
+        noticeList.innerHTML = "";
+        if(json.data.length === 0) noticeList.innerHTML = "<i>No notices found</i>";
+        json.data.forEach(item => {
+          const div = document.createElement('div');
+          div.className = "message-item";
+          div.innerHTML = `<div class="message-date">${item.date}</div><div>${escapeHtml(item.message)}</div>`;
+          noticeList.appendChild(div);
+        });
       }
+    } catch(e) {
+      showPopup("Error loading notices: " + e.message);
+    }
+  }
+
+  // Escape HTML to prevent XSS
+  function escapeHtml(text) {
+    return text.replace(/[&<>"']/g, function(m) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
     });
   }
 
-  // Initial state: show login
-  showLogin();
-</script>
+  // Initial focus
+  loginUsernameInput.focus();
 
+})();
+</script>
 </body>
 </html>
