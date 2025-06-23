@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Employee Dashboard Premium</title>
-  
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- SweetAlert2 -->
@@ -14,213 +14,317 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
   <style>
+    /* Import Google Font */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
+
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #3a416f 0%, #1e1f29 100%);
       min-height: 100vh;
       margin: 0;
-      padding: 0;
-      color: #f0f4f8;
-      overflow-x: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
+      color: #e0e7ff;
+      user-select: none;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
+
     .container {
-      max-width: 480px;
       width: 100%;
-      background: #1a202c;
-      border-radius: 1rem;
-      padding: 2.5rem 2rem 3rem;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+      max-width: 520px;
+      background: #23262e;
+      border-radius: 1.25rem;
+      box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.4),
+        inset 0 0 25px #3b82f6aa;
+      padding: 3rem 2.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       position: relative;
       overflow: hidden;
-      text-align: center;
     }
+
     h2 {
-      font-weight: 800;
-      font-size: 2.6rem;
-      margin-bottom: 1.5rem;
-      letter-spacing: 0.06em;
-      text-shadow: 0 2px 8px rgba(102,126,234,0.9);
-      color: #a0aec0;
-      user-select: none;
+      font-weight: 700;
+      font-size: 2.8rem;
+      color: #60a5fa;
+      margin-bottom: 2rem;
+      letter-spacing: 0.1em;
+      text-shadow:
+        0 0 10px #60a5fa,
+        0 0 20px #2563eb;
     }
+
     input {
-      background: #2d3748;
-      border: none;
-      padding: 1.15rem 1.5rem;
-      border-radius: 1rem;
-      color: #e2e8f0;
-      font-size: 1.15rem;
       width: 100%;
-      margin-bottom: 1.6rem;
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);
-      transition: background-color 0.3s, box-shadow 0.3s;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      user-select: text;
+      background: #1f2937;
+      border: none;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.75rem;
+      color: #cbd5e1;
+      font-size: 1.15rem;
+      font-weight: 500;
+      box-shadow:
+        inset 0 2px 6px rgba(100, 116, 139, 0.7);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      outline-offset: 2px;
     }
     input::placeholder {
-      color: #718096;
-      font-weight: 500;
+      color: #64748b;
+      font-weight: 400;
+      letter-spacing: 0.02em;
     }
     input:focus {
+      background: #2563eb;
+      box-shadow:
+        0 0 12px #60a5fa,
+        inset 0 0 12px #60a5fa;
+      color: white;
       outline: none;
-      background: #4a5568;
-      box-shadow: 0 0 14px 3px #667eea;
-      color: #f7fafc;
     }
+
     button {
-      background: #667eea;
-      padding: 1.15rem 1rem;
-      border-radius: 1.7rem;
-      font-weight: 800;
       width: 100%;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      border: none;
+      border-radius: 9999px;
+      padding: 1.25rem 0;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #f0f9ff;
       cursor: pointer;
-      transition: background-color 0.35s, box-shadow 0.35s;
-      color: #fff;
-      font-size: 1.25rem;
-      box-shadow: 0 10px 28px rgba(102,126,234,0.9);
+      box-shadow:
+        0 8px 20px rgba(37, 99, 235, 0.7),
+        0 4px 8px rgba(59, 130, 246, 0.7);
       user-select: none;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-bottom: 1.5rem;
+      letter-spacing: 0.05em;
+      transition: background 0.4s ease, box-shadow 0.4s ease;
     }
     button:hover {
-      background: #5a67d8;
-      box-shadow: 0 14px 40px rgba(102,126,234,1);
+      background: linear-gradient(135deg, #60a5fa, #3b82f6);
+      box-shadow:
+        0 10px 25px rgba(59, 130, 246, 0.9),
+        0 6px 12px rgba(37, 99, 235, 0.9);
     }
+
     .switch-login {
       font-size: 1rem;
-      user-select: none;
       color: #94a3b8;
-      margin-bottom: 2rem;
+      margin-bottom: 2.2rem;
+      user-select: none;
     }
     .switch-login button {
       background: none;
       border: none;
-      color: #667eea;
-      font-weight: 700;
+      color: #60a5fa;
+      font-weight: 600;
       cursor: pointer;
       text-decoration: underline;
       padding: 0;
-      margin-left: 6px;
+      margin-left: 8px;
       font-size: 1rem;
       user-select: text;
+      transition: color 0.3s ease;
     }
     .switch-login button:hover {
-      color: #a3bffa;
+      color: #93c5fd;
     }
-    /* Fade animation */
+
     .hidden {
       display: none !important;
     }
+
+    /* Animations */
     .fadeInUp {
-      animation-duration: 0.55s;
+      animation-duration: 0.6s;
       animation-fill-mode: both;
       animation-name: fadeInUp;
     }
     @keyframes fadeInUp {
-      from {opacity: 0; transform: translateY(30px);}
-      to {opacity: 1; transform: translateY(0);}
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
-    /* Dashboard nav and content styles */
-    #dashboardNav {
+    /* DASHBOARD */
+
+    #dashboardContainer {
+      max-width: 720px;
+      padding: 2rem 3rem 3rem;
+      background: #1e293b;
+      box-shadow:
+        0 10px 30px rgba(37, 99, 235, 0.7),
+        inset 0 0 20px #3b82f6aa;
+      border-radius: 1.5rem;
       display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-bottom: 2rem;
+      flex-direction: column;
+      user-select: text;
     }
-    #dashboardNav button {
-      flex: 1;
-      padding: 0.8rem 0;
-      border-radius: 1rem;
+
+    #dashboardWelcome {
+      font-size: 2rem;
       font-weight: 700;
-      font-size: 1.1rem;
-      background: #4c51bf;
-      color: #e2e8f0;
-      box-shadow: 0 6px 20px rgba(76,81,191,0.6);
-      transition: background-color 0.35s;
-      cursor: pointer;
+      margin-bottom: 1.5rem;
+      color: #93c5fd;
+      text-shadow: 0 0 8px #60a5fa;
       user-select: none;
     }
-    #dashboardNav button:hover, #dashboardNav button.active {
-      background: #667eea;
-      box-shadow: 0 12px 32px rgba(102,126,234,0.9);
-      color: white;
+
+    #dashboardNav {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
     }
-    .pageContent {
-      background: #2d3748;
-      border-radius: 1rem;
-      padding: 1.5rem 1.5rem 2rem;
-      color: #e2e8f0;
-      min-height: 320px;
-      overflow-y: auto;
-      box-shadow: inset 0 0 14px rgba(0,0,0,0.9);
-      user-select: text;
-      font-size: 1rem;
-      line-height: 1.5;
+    #dashboardNav button {
+      flex: 1 1 140px;
+      padding: 0.9rem 0;
+      border-radius: 2rem;
+      font-weight: 700;
+      font-size: 1.15rem;
+      background: #3b82f6;
+      color: white;
+      box-shadow:
+        0 8px 22px rgba(59, 130, 246, 0.85);
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      border: none;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    #dashboardNav button.active,
+    #dashboardNav button:hover {
+      background: #60a5fa;
+      box-shadow:
+        0 12px 30px rgba(96, 165, 250, 1);
+      color: #f0f9ff;
     }
 
-    /* Scrollbar for pageContent */
+    #logoutBtn {
+      background: #ef4444 !important;
+      box-shadow:
+        0 8px 22px rgba(239, 68, 68, 0.9) !important;
+    }
+    #logoutBtn:hover {
+      background: #f87171 !important;
+      box-shadow:
+        0 12px 30px rgba(248, 113, 113, 1) !important;
+    }
+
+    .pageContent {
+      background: #334155;
+      border-radius: 1.25rem;
+      padding: 2rem;
+      color: #e0e7ff;
+      min-height: 350px;
+      max-height: 520px;
+      overflow-y: auto;
+      box-shadow:
+        inset 0 0 15px rgba(66, 153, 225, 0.5);
+      font-size: 1.1rem;
+      line-height: 1.6;
+      user-select: text;
+    }
+    .pageContent h3 {
+      font-weight: 700;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #bfdbfe;
+      text-shadow: 0 0 8px #3b82f6;
+    }
+    .pageContent ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    .pageContent li {
+      background: #1e293b;
+      margin-bottom: 1rem;
+      border-radius: 1rem;
+      padding: 1rem 1.25rem;
+      box-shadow:
+        0 6px 18px rgba(96, 165, 250, 0.3);
+      transition: background-color 0.25s ease;
+      word-break: break-word;
+    }
+    .pageContent li:hover {
+      background: #3b82f6;
+      color: white;
+      box-shadow:
+        0 10px 26px rgba(96, 165, 250, 0.7);
+    }
+    .pageContent a {
+      color: #bfdbfe;
+      text-decoration: underline;
+      transition: color 0.25s ease;
+    }
+    .pageContent a:hover {
+      color: #60a5fa;
+    }
+
+    /* Scrollbar styles */
     .pageContent::-webkit-scrollbar {
-      width: 8px;
+      width: 10px;
     }
     .pageContent::-webkit-scrollbar-track {
-      background: #1a202c;
+      background: #1e293b;
       border-radius: 1rem;
     }
     .pageContent::-webkit-scrollbar-thumb {
-      background: #667eea;
+      background: #60a5fa;
       border-radius: 1rem;
     }
   </style>
 </head>
 <body>
-  <div class="container" id="loginContainer">
+  <div class="container" id="loginContainer" role="main" aria-label="Login container">
 
     <!-- LOGIN PAGES -->
-    <div id="adminLoginPage" class="fadeInUp hidden">
-      <h2>Admin Login</h2>
-      <input type="text" id="adminUser" placeholder="Admin Username" autocomplete="off" />
-      <input type="password" id="adminPass" placeholder="Admin Password" autocomplete="off" />
-      <button onclick="adminLogin()">Login as Admin</button>
-      <div class="switch-login">
-        Not admin? 
-        <button onclick="showLoginPage('user')">User Login</button>
-      </div>
-    </div>
+    <section id="adminLoginPage" class="fadeInUp hidden" aria-labelledby="adminLoginTitle" tabindex="0">
+      <h2 id="adminLoginTitle">Admin Login</h2>
+      <input type="text" id="adminUser" placeholder="Admin Username" autocomplete="off" aria-label="Admin Username" />
+      <input type="password" id="adminPass" placeholder="Admin Password" autocomplete="off" aria-label="Admin Password" />
+      <button onclick="adminLogin()" aria-label="Login as Admin">Login as Admin</button>
+      <p class="switch-login">
+        Not admin? <button onclick="showLoginPage('user')" aria-label="Switch to User Login">User Login</button>
+      </p>
+    </section>
 
-    <div id="userLoginPage" class="fadeInUp">
-      <h2>User Login</h2>
-      <input type="text" id="userName" placeholder="Username" autocomplete="off" />
-      <input type="text" id="userKey" placeholder="User Key" autocomplete="off" />
-      <button onclick="userLogin()">Login as User</button>
-      <div class="switch-login">
-        Are you admin? 
-        <button onclick="showLoginPage('admin')">Admin Login</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- DASHBOARD CONTAINER (hidden initially) -->
-  <div class="container hidden" id="dashboardContainer" style="max-width: 620px; flex-direction: column;">
-    <h2 id="dashboardWelcome" style="user-select:none; margin-bottom: 1.5rem;"></h2>
-    <nav id="dashboardNav" aria-label="Dashboard navigation">
-      <button data-page="reports" class="active" aria-current="page">Reports</button>
-      <button data-page="payments">Payments</button>
-      <button data-page="notices">Notices</button>
-      <button id="logoutBtn" style="background:#e53e3e;">Logout</button>
-    </nav>
-    <section id="dashboardContent" class="pageContent" tabindex="0" aria-live="polite" aria-atomic="true">
-      Loading...
+    <section id="userLoginPage" class="fadeInUp" aria-labelledby="userLoginTitle" tabindex="0">
+      <h2 id="userLoginTitle">User Login</h2>
+      <input type="text" id="userName" placeholder="Username" autocomplete="off" aria-label="Username" />
+      <input type="text" id="userKey" placeholder="Access Key" autocomplete="off" aria-label="User Access Key" />
+      <button onclick="userLogin()" aria-label="Login as User">Login as User</button>
+      <p class="switch-login">
+        Are you admin? <button onclick="showLoginPage('admin')" aria-label="Switch to Admin Login">Admin Login</button>
+      </p>
     </section>
   </div>
 
+  <div class="container hidden" id="dashboardContainer" role="main" aria-label="Dashboard container">
+    <div id="dashboardWelcome" aria-live="polite"></div>
+    <nav id="dashboardNav" role="navigation" aria-label="Dashboard navigation">
+      <button id="btnReports" onclick="loadPage('reports')" aria-controls="pageContent" aria-selected="false">Reports</button>
+      <button id="btnPayments" onclick="loadPage('payments')" aria-controls="pageContent" aria-selected="false">Payments</button>
+      <button id="btnNotices" onclick="loadPage('notices')" aria-controls="pageContent" aria-selected="false">Notices</button>
+      <button id="logoutBtn" onclick="logout()" aria-label="Logout">Logout</button>
+    </nav>
+    <div id="pageContent" class="pageContent" tabindex="0" aria-live="polite"></div>
+  </div>
+
 <script>
-  // Firebase config - your project config here
+  // Firebase config (replace with your own)
   const firebaseConfig = {
     apiKey: "AIzaSyBImNhuhq_k4XrVLXmOxOxbN4sNQhMd5PI",
     authDomain: "employeedashboard-ab719.firebaseapp.com",
@@ -234,27 +338,21 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  // Page Elements
-  const adminLoginPage = document.getElementById('adminLoginPage');
-  const userLoginPage = document.getElementById('userLoginPage');
-  const loginContainer = document.getElementById('loginContainer');
-  const dashboardContainer = document.getElementById('dashboardContainer');
-  const dashboardWelcome = document.getElementById('dashboardWelcome');
-  const dashboardNav = document.getElementById('dashboardNav');
-  const dashboardContent = document.getElementById('dashboardContent');
-  const logoutBtn = document.getElementById('logoutBtn');
-
+  let currentRole = null;
   let currentUser = null;
-  let currentRole = null; // 'admin' or 'user'
 
-  // Show login page: "admin" or "user"
-  function showLoginPage(type) {
-    if (type === 'admin') {
-      adminLoginPage.classList.remove('hidden');
-      userLoginPage.classList.add('hidden');
+  // Show login page, 'admin' or 'user'
+  function showLoginPage(role) {
+    currentRole = null;
+    currentUser = null;
+    document.getElementById('loginContainer').classList.remove('hidden');
+    document.getElementById('dashboardContainer').classList.add('hidden');
+    if(role === 'admin') {
+      document.getElementById('adminLoginPage').classList.remove('hidden');
+      document.getElementById('userLoginPage').classList.add('hidden');
     } else {
-      adminLoginPage.classList.add('hidden');
-      userLoginPage.classList.remove('hidden');
+      document.getElementById('userLoginPage').classList.remove('hidden');
+      document.getElementById('adminLoginPage').classList.add('hidden');
     }
   }
 
@@ -262,249 +360,235 @@
   async function adminLogin() {
     const username = document.getElementById('adminUser').value.trim();
     const password = document.getElementById('adminPass').value.trim();
-    if (!username || !password) {
-      Swal.fire('Error', 'Please enter admin username and password', 'error');
+    if(!username || !password) {
+      Swal.fire('Error', 'Please enter username and password', 'error');
       return;
     }
-
     try {
-      const adminDoc = await db.collection('admins').doc(username).get();
-      if (!adminDoc.exists) {
-        Swal.fire('Error', 'Admin username not found', 'error');
+      const docRef = db.collection('admins').doc(username);
+      const doc = await docRef.get();
+      if(!doc.exists) {
+        Swal.fire('Error', 'Admin not found', 'error');
         return;
       }
-      const adminData = adminDoc.data();
-      if (adminData.password !== password) {
-        Swal.fire('Error', 'Wrong password', 'error');
+      const data = doc.data();
+      if(data.password !== password) {
+        Swal.fire('Error', 'Incorrect password', 'error');
         return;
       }
-      currentUser = username;
       currentRole = 'admin';
-      Swal.fire('Success', 'Logged in as Admin', 'success');
+      currentUser = username;
+      Swal.fire('Success', 'Login successful', 'success');
       showDashboard();
-    } catch (e) {
+    } catch(e) {
+      Swal.fire('Error', 'Login failed', 'error');
       console.error(e);
-      Swal.fire('Error', 'Failed to login admin', 'error');
     }
   }
 
-  // User login
+  // User login (with username and key)
   async function userLogin() {
     const username = document.getElementById('userName').value.trim();
     const key = document.getElementById('userKey').value.trim();
-    if (!username || !key) {
-      Swal.fire('Error', 'Please enter username and key', 'error');
+    if(!username || !key) {
+      Swal.fire('Error', 'Please enter username and access key', 'error');
       return;
     }
-
     try {
-      const userDoc = await db.collection('users').doc(username).get();
-      if (!userDoc.exists) {
+      const docRef = db.collection('users').doc(username);
+      const doc = await docRef.get();
+      if(!doc.exists) {
         Swal.fire('Error', 'User not found', 'error');
         return;
       }
-      const userData = userDoc.data();
-      if (userData.key !== key) {
-        Swal.fire('Error', 'Wrong key', 'error');
+      const data = doc.data();
+      if(data.key !== key) {
+        Swal.fire('Error', 'Incorrect access key', 'error');
         return;
       }
-      currentUser = username;
       currentRole = 'user';
-      Swal.fire('Success', 'Logged in as User', 'success');
+      currentUser = username;
+      Swal.fire('Success', 'Login successful', 'success');
       showDashboard();
-    } catch (e) {
+    } catch(e) {
+      Swal.fire('Error', 'Login failed', 'error');
       console.error(e);
-      Swal.fire('Error', 'Failed to login user', 'error');
     }
   }
 
-  // Show dashboard and load default page
+  // Show dashboard UI
   function showDashboard() {
-    loginContainer.classList.add('hidden');
-    dashboardContainer.classList.remove('hidden');
-    dashboardWelcome.textContent = `Welcome, ${currentUser} (${currentRole.toUpperCase()})`;
-    loadPage('reports'); // default page
+    document.getElementById('loginContainer').classList.add('hidden');
+    document.getElementById('dashboardContainer').classList.remove('hidden');
+    document.getElementById('dashboardWelcome').textContent = `Welcome, ${currentUser} (${currentRole})`;
+    // Load reports by default
+    loadPage('reports');
   }
 
   // Logout function
-  logoutBtn.addEventListener('click', () => {
+  function logout() {
     Swal.fire({
       title: 'Logout?',
-      text: 'Are you sure you want to logout?',
-      icon: 'question',
+      text: "Are you sure you want to logout?",
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, logout',
-      cancelButtonText: 'Cancel',
-    }).then(result => {
+      confirmButtonColor: '#2563eb',
+      cancelButtonColor: '#ef4444',
+      confirmButtonText: 'Yes, logout'
+    }).then((result) => {
       if(result.isConfirmed) {
         currentUser = null;
         currentRole = null;
-        dashboardContainer.classList.add('hidden');
-        loginContainer.classList.remove('hidden');
         showLoginPage('user');
-      }
-    });
-  });
-
-  // Dashboard navigation button click handler
-  dashboardNav.addEventListener('click', (e) => {
-    if (e.target.tagName === 'BUTTON' && e.target.dataset.page) {
-      const page = e.target.dataset.page;
-      setActiveNav(page);
-      loadPage(page);
-    }
-  });
-
-  // Set active button in dashboard nav
-  function setActiveNav(page) {
-    [...dashboardNav.querySelectorAll('button')].forEach(btn => {
-      if(btn.dataset.page === page) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
       }
     });
   }
 
-  // Load content for each page
+  // Load specific page content: 'reports', 'payments', 'notices'
   async function loadPage(page) {
-    dashboardContent.innerHTML = '<p class="text-center text-gray-300">Loading...</p>';
+    // Update nav active state
+    ['btnReports','btnPayments','btnNotices'].forEach(btnId => {
+      document.getElementById(btnId).classList.remove('active');
+    });
+    document.getElementById('btn' + capitalize(page)).classList.add('active');
+
+    const dashboardContent = document.getElementById('pageContent');
+    dashboardContent.innerHTML = `<p class="text-center text-gray-400 animate-pulse">Loading ${page}...</p>`;
+
     try {
       if(page === 'reports') {
-        await loadReports();
+        await loadReports(dashboardContent);
       } else if(page === 'payments') {
-        await loadPayments();
+        await loadPayments(dashboardContent);
       } else if(page === 'notices') {
-        await loadNotices();
+        await loadNotices(dashboardContent);
       }
     } catch(e) {
-      dashboardContent.innerHTML = `<p class="text-red-500 text-center">Error loading ${page}</p>`;
+      dashboardContent.innerHTML = `<p class="text-center text-red-500">Failed to load ${page} data.</p>`;
       console.error(e);
     }
   }
 
-  // Load Reports page data
-  async function loadReports() {
-    // Admin can see all, users only their own
-    let query;
-    if(currentRole === 'admin') {
-      query = db.collection('reports').orderBy('date', 'desc').limit(30);
-    } else {
-      query = db.collection('reports').where('employee', '==', currentUser).orderBy('date', 'desc').limit(30);
+  // Capitalize first letter helper
+  function capitalize(s) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+  // Load reports
+  async function loadReports(container) {
+    let query = db.collection('reports').orderBy('date', 'desc').limit(30);
+    if(currentRole === 'user') {
+      query = query.where('employee', '==', currentUser);
     }
     const snapshot = await query.get();
     if(snapshot.empty) {
-      dashboardContent.innerHTML = '<p class="text-center text-gray-400">No reports found.</p>';
+      container.innerHTML = '<p class="text-center text-gray-400">No reports found.</p>';
       return;
     }
-    let html = '<h3 class="text-xl font-semibold mb-3">Reports</h3><ul class="space-y-3">';
+    let html = '<h3>Reports</h3><ul>';
     snapshot.forEach(doc => {
-      const data = doc.data();
+      const d = doc.data();
       html += `
-        <li class="p-3 rounded bg-gray-700">
-          <strong>Date:</strong> ${data.date}<br />
-          <strong>Employee:</strong> ${data.employee}<br />
-          <strong>Message:</strong> ${data.message}<br />
-          ${data.fileUrl ? `<a href="${data.fileUrl}" target="_blank" class="text-blue-400 underline">View File</a>` : ''}
+        <li>
+          <strong>Date:</strong> ${d.date} <br/>
+          <strong>To:</strong> ${d.employee} <br/>
+          <strong>Message:</strong> ${d.message} <br/>
+          ${d.fileUrl ? `<a href="${d.fileUrl}" target="_blank" rel="noopener noreferrer" class="underline text-blue-300">View File</a>` : ''}
         </li>
       `;
     });
     html += '</ul>';
-    // Admin add report button
     if(currentRole === 'admin') {
-      html += `<button class="mt-6 bg-green-500 hover:bg-green-600 rounded px-4 py-2 font-semibold" onclick="showAddReport()">Add Report</button>`;
+      html += `<button class="mt-6" onclick="showAddReport()">Add Report</button>`;
     }
-    dashboardContent.innerHTML = html;
+    container.innerHTML = html;
   }
 
-  // Load Payments page data
-  async function loadPayments() {
-    let query;
-    if(currentRole === 'admin') {
-      query = db.collection('payments').orderBy('date', 'desc').limit(30);
-    } else {
-      query = db.collection('payments').where('employee', '==', currentUser).orderBy('date', 'desc').limit(30);
+  // Load payments
+  async function loadPayments(container) {
+    let query = db.collection('payments').orderBy('date', 'desc').limit(30);
+    if(currentRole === 'user') {
+      query = query.where('employee', '==', currentUser);
     }
     const snapshot = await query.get();
     if(snapshot.empty) {
-      dashboardContent.innerHTML = '<p class="text-center text-gray-400">No payments found.</p>';
+      container.innerHTML = '<p class="text-center text-gray-400">No payments found.</p>';
       return;
     }
-    let html = '<h3 class="text-xl font-semibold mb-3">Payments</h3><ul class="space-y-3">';
+    let html = '<h3>Payments</h3><ul>';
     snapshot.forEach(doc => {
-      const data = doc.data();
+      const d = doc.data();
       html += `
-        <li class="p-3 rounded bg-gray-700">
-          <strong>Date:</strong> ${data.date}<br />
-          <strong>Employee:</strong> ${data.employee}<br />
-          <strong>Amount:</strong> ${data.amount}<br />
-          <strong>Note:</strong> ${data.note || 'N/A'}<br />
-          <strong>Message:</strong> ${data.message || 'N/A'}
+        <li>
+          <strong>Date:</strong> ${d.date} <br/>
+          <strong>Employee:</strong> ${d.employee} <br/>
+          <strong>Amount:</strong> ${d.amount} <br/>
+          <strong>Note:</strong> ${d.note || '-'} <br/>
+          <strong>Message:</strong> ${d.message || '-'}
         </li>
       `;
     });
     html += '</ul>';
-    // Admin add payment button
     if(currentRole === 'admin') {
-      html += `<button class="mt-6 bg-green-500 hover:bg-green-600 rounded px-4 py-2 font-semibold" onclick="showAddPayment()">Add Payment</button>`;
+      html += `<button class="mt-6" onclick="showAddPayment()">Add Payment</button>`;
     }
-    dashboardContent.innerHTML = html;
+    container.innerHTML = html;
   }
 
-  // Load Notices page data
-  async function loadNotices() {
+  // Load notices
+  async function loadNotices(container) {
     const snapshot = await db.collection('notices').orderBy('date', 'desc').limit(30).get();
     if(snapshot.empty) {
-      dashboardContent.innerHTML = '<p class="text-center text-gray-400">No notices found.</p>';
+      container.innerHTML = '<p class="text-center text-gray-400">No notices found.</p>';
       return;
     }
-    let html = '<h3 class="text-xl font-semibold mb-3">Notices</h3><ul class="space-y-3">';
+    let html = '<h3>Notices</h3><ul>';
     snapshot.forEach(doc => {
-      const data = doc.data();
+      const d = doc.data();
       html += `
-        <li class="p-3 rounded bg-gray-700">
-          <strong>Date:</strong> ${data.date}<br />
-          <strong>Message:</strong> ${data.message}
+        <li>
+          <strong>Date:</strong> ${d.date} <br/>
+          <strong>Message:</strong> ${d.message}
         </li>
       `;
     });
     html += '</ul>';
-    // Admin add notice button
     if(currentRole === 'admin') {
-      html += `<button class="mt-6 bg-green-500 hover:bg-green-600 rounded px-4 py-2 font-semibold" onclick="showAddNotice()">Add Notice</button>`;
+      html += `<button class="mt-6" onclick="showAddNotice()">Add Notice</button>`;
     }
-    dashboardContent.innerHTML = html;
+    container.innerHTML = html;
   }
 
-  // Show Add Report modal/popup for admin
+  // Show Add Report modal for admin
   function showAddReport() {
     Swal.fire({
       title: 'Add New Report',
       html:
         `<input id="swal-report-employee" class="swal2-input" placeholder="Employee Username" autocomplete="off">` +
-        `<input id="swal-report-date" class="swal2-input" placeholder="Date (YYYY-MM-DD)" autocomplete="off" type="date">` +
+        `<input id="swal-report-date" type="date" class="swal2-input" placeholder="Date">` +
         `<textarea id="swal-report-message" class="swal2-textarea" placeholder="Report message"></textarea>` +
         `<input id="swal-report-file" class="swal2-input" placeholder="File URL (optional)" autocomplete="off">`,
       focusConfirm: false,
       preConfirm: () => {
-        const employee = document.getElementById('swal-report-employee').value.trim();
-        const date = document.getElementById('swal-report-date').value.trim();
-        const message = document.getElementById('swal-report-message').value.trim();
-        const fileUrl = document.getElementById('swal-report-file').value.trim();
-        if (!employee || !date || !message) {
-          Swal.showValidationMessage('Please enter employee, date, and message');
-          return false;
+        return {
+          employee: document.getElementById('swal-report-employee').value.trim(),
+          date: document.getElementById('swal-report-date').value,
+          message: document.getElementById('swal-report-message').value.trim(),
+          fileUrl: document.getElementById('swal-report-file').value.trim(),
         }
-        return { employee, date, message, fileUrl };
       }
     }).then(async (result) => {
       if(result.isConfirmed) {
-        const { employee, date, message, fileUrl } = result.value;
+        const r = result.value;
+        if(!r.employee || !r.date || !r.message) {
+          Swal.fire('Error', 'Please fill all required fields', 'error');
+          return;
+        }
         try {
-          await db.collection('reports').add({ employee, date, message, fileUrl });
+          await db.collection('reports').add(r);
           Swal.fire('Success', 'Report added', 'success');
           loadPage('reports');
-        } catch (e) {
+        } catch(e) {
           Swal.fire('Error', 'Failed to add report', 'error');
           console.error(e);
         }
@@ -512,37 +596,38 @@
     });
   }
 
-  // Show Add Payment modal/popup for admin
+  // Show Add Payment modal for admin
   function showAddPayment() {
     Swal.fire({
       title: 'Add New Payment',
       html:
         `<input id="swal-payment-employee" class="swal2-input" placeholder="Employee Username" autocomplete="off">` +
-        `<input id="swal-payment-date" class="swal2-input" placeholder="Date (YYYY-MM-DD)" autocomplete="off" type="date">` +
-        `<input id="swal-payment-amount" class="swal2-input" placeholder="Amount" autocomplete="off" type="number" min="0" step="any">` +
+        `<input id="swal-payment-date" type="date" class="swal2-input" placeholder="Date">` +
+        `<input id="swal-payment-amount" type="number" class="swal2-input" placeholder="Amount">` +
         `<input id="swal-payment-note" class="swal2-input" placeholder="Note (optional)" autocomplete="off">` +
         `<textarea id="swal-payment-message" class="swal2-textarea" placeholder="Message (optional)"></textarea>`,
       focusConfirm: false,
       preConfirm: () => {
-        const employee = document.getElementById('swal-payment-employee').value.trim();
-        const date = document.getElementById('swal-payment-date').value.trim();
-        const amount = document.getElementById('swal-payment-amount').value.trim();
-        const note = document.getElementById('swal-payment-note').value.trim();
-        const message = document.getElementById('swal-payment-message').value.trim();
-        if (!employee || !date || !amount) {
-          Swal.showValidationMessage('Please enter employee, date, and amount');
-          return false;
+        return {
+          employee: document.getElementById('swal-payment-employee').value.trim(),
+          date: document.getElementById('swal-payment-date').value,
+          amount: document.getElementById('swal-payment-amount').value,
+          note: document.getElementById('swal-payment-note').value.trim(),
+          message: document.getElementById('swal-payment-message').value.trim(),
         }
-        return { employee, date, amount, note, message };
       }
     }).then(async (result) => {
       if(result.isConfirmed) {
-        const { employee, date, amount, note, message } = result.value;
+        const r = result.value;
+        if(!r.employee || !r.date || !r.amount) {
+          Swal.fire('Error', 'Please fill all required fields', 'error');
+          return;
+        }
         try {
-          await db.collection('payments').add({ employee, date, amount, note, message });
+          await db.collection('payments').add(r);
           Swal.fire('Success', 'Payment added', 'success');
           loadPage('payments');
-        } catch (e) {
+        } catch(e) {
           Swal.fire('Error', 'Failed to add payment', 'error');
           console.error(e);
         }
@@ -550,31 +635,32 @@
     });
   }
 
-  // Show Add Notice modal/popup for admin
+  // Show Add Notice modal for admin
   function showAddNotice() {
     Swal.fire({
       title: 'Add New Notice',
       html:
-        `<input id="swal-notice-date" class="swal2-input" placeholder="Date (YYYY-MM-DD)" autocomplete="off" type="date">` +
+        `<input id="swal-notice-date" type="date" class="swal2-input" placeholder="Date">` +
         `<textarea id="swal-notice-message" class="swal2-textarea" placeholder="Notice message"></textarea>`,
       focusConfirm: false,
       preConfirm: () => {
-        const date = document.getElementById('swal-notice-date').value.trim();
-        const message = document.getElementById('swal-notice-message').value.trim();
-        if (!date || !message) {
-          Swal.showValidationMessage('Please enter date and message');
-          return false;
+        return {
+          date: document.getElementById('swal-notice-date').value,
+          message: document.getElementById('swal-notice-message').value.trim(),
         }
-        return { date, message };
       }
     }).then(async (result) => {
       if(result.isConfirmed) {
-        const { date, message } = result.value;
+        const r = result.value;
+        if(!r.date || !r.message) {
+          Swal.fire('Error', 'Please fill all required fields', 'error');
+          return;
+        }
         try {
-          await db.collection('notices').add({ date, message });
+          await db.collection('notices').add(r);
           Swal.fire('Success', 'Notice added', 'success');
           loadPage('notices');
-        } catch (e) {
+        } catch(e) {
           Swal.fire('Error', 'Failed to add notice', 'error');
           console.error(e);
         }
@@ -582,8 +668,10 @@
     });
   }
 
-  // Show user login page initially
-  showLoginPage('user');
+  // On load show user login page by default
+  window.onload = () => {
+    showLoginPage('user');
+  }
 </script>
 </body>
 </html>
