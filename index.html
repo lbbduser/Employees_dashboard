@@ -1,330 +1,284 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Employee Dashboard Premium</title>
-
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- SweetAlert2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-  <style>
-    /* Import Google Font */
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
-
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #3a416f 0%, #1e1f29 100%);
-      min-height: 100vh;
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #e0e7ff;
-      user-select: none;
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 520px;
-      background: #23262e;
-      border-radius: 1.25rem;
-      box-shadow:
-        0 8px 30px rgba(0, 0, 0, 0.4),
-        inset 0 0 25px #3b82f6aa;
-      padding: 3rem 2.5rem 3rem;
-      display: flex;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Employee Dashboard</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+<!-- SweetAlert2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
+<style>
+  /* Reset & base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0; padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #4b79a1, #283e51);
+    color: #f0f0f3;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Container */
+  #app {
+    max-width: 980px;
+    margin: 20px auto;
+    background: #1c2833;
+    border-radius: 12px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+  header {
+    background: #2f4858;
+    padding: 20px 30px;
+    font-weight: 600;
+    font-size: 1.8rem;
+    text-align: center;
+    letter-spacing: 1px;
+    color: #dde1e7;
+  }
+  /* Login pages */
+  .login-page {
+    padding: 30px 30px 50px;
+    display: none;
+    animation: fadeInUp 0.8s ease forwards;
+  }
+  .login-page.active {
+    display: block;
+  }
+  .login-form {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .login-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #a9bacd;
+  }
+  .login-form input {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    color: #333;
+  }
+  .btn {
+    background: #5d8aa8;
+    border: none;
+    padding: 14px 0;
+    border-radius: 8px;
+    width: 100%;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .btn:hover {
+    background: #7ba3c5;
+  }
+  .login-toggle {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.95rem;
+    color: #9bb7cf;
+    cursor: pointer;
+  }
+  .login-toggle span {
+    color: #c2d4f2;
+    text-decoration: underline;
+  }
+  /* Dashboard container */
+  #dashboard {
+    display: none;
+    padding: 30px 40px;
+    animation: fadeInUp 0.8s ease forwards;
+  }
+  #dashboard.active {
+    display: block;
+  }
+  /* Nav buttons */
+  .nav-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+  .nav-buttons button {
+    background: #3f5a72;
+    color: #d7dde5;
+    border: none;
+    padding: 12px 20px;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+    transition: background 0.3s ease;
+  }
+  .nav-buttons button.active,
+  .nav-buttons button:hover {
+    background: #728ca1;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(114,140,161,0.7);
+  }
+  /* Content area */
+  .content-area {
+    background: #2a3b48;
+    border-radius: 10px;
+    padding: 20px;
+    min-height: 350px;
+    color: #cfd8e9;
+    overflow-y: auto;
+  }
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  th, td {
+    padding: 12px 15px;
+    text-align: left;
+  }
+  th {
+    background: #425a70;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  tr:nth-child(even) {
+    background: #34495e;
+  }
+  tr:hover {
+    background: #56789e;
+  }
+  /* Form styles */
+  .form-group {
+    margin-bottom: 15px;
+  }
+  .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: none;
+    font-size: 1rem;
+  }
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+  /* Buttons inside content */
+  .action-btn {
+    margin-top: 10px;
+    background: #5a8fb5;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+    transition: background 0.3s ease;
+  }
+  .action-btn:hover {
+    background: #7aa5ca;
+  }
+  /* Logout button */
+  #logoutBtn {
+    margin-top: 20px;
+    display: block;
+    background: #d94f4f;
+    width: 140px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 3px 8px rgba(217,79,79,0.6);
+  }
+  #logoutBtn:hover {
+    background: #f26565;
+  }
+  /* Responsive */
+  @media (max-width: 600px) {
+    .nav-buttons {
       flex-direction: column;
-      align-items: center;
-      position: relative;
-      overflow: hidden;
     }
-
-    h2 {
-      font-weight: 700;
-      font-size: 2.8rem;
-      color: #60a5fa;
-      margin-bottom: 2rem;
-      letter-spacing: 0.1em;
-      text-shadow:
-        0 0 10px #60a5fa,
-        0 0 20px #2563eb;
+  }
+  /* Animations */
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
     }
-
-    input {
-      width: 100%;
-      background: #1f2937;
-      border: none;
-      border-radius: 12px;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1.75rem;
-      color: #cbd5e1;
-      font-size: 1.15rem;
-      font-weight: 500;
-      box-shadow:
-        inset 0 2px 6px rgba(100, 116, 139, 0.7);
-      transition: background-color 0.3s ease, box-shadow 0.3s ease;
-      outline-offset: 2px;
+    100% {
+      opacity: 1;
+      transform: translateY(0);
     }
-    input::placeholder {
-      color: #64748b;
-      font-weight: 400;
-      letter-spacing: 0.02em;
-    }
-    input:focus {
-      background: #2563eb;
-      box-shadow:
-        0 0 12px #60a5fa,
-        inset 0 0 12px #60a5fa;
-      color: white;
-      outline: none;
-    }
-
-    button {
-      width: 100%;
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
-      border: none;
-      border-radius: 9999px;
-      padding: 1.25rem 0;
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #f0f9ff;
-      cursor: pointer;
-      box-shadow:
-        0 8px 20px rgba(37, 99, 235, 0.7),
-        0 4px 8px rgba(59, 130, 246, 0.7);
-      user-select: none;
-      letter-spacing: 0.05em;
-      transition: background 0.4s ease, box-shadow 0.4s ease;
-    }
-    button:hover {
-      background: linear-gradient(135deg, #60a5fa, #3b82f6);
-      box-shadow:
-        0 10px 25px rgba(59, 130, 246, 0.9),
-        0 6px 12px rgba(37, 99, 235, 0.9);
-    }
-
-    .switch-login {
-      font-size: 1rem;
-      color: #94a3b8;
-      margin-bottom: 2.2rem;
-      user-select: none;
-    }
-    .switch-login button {
-      background: none;
-      border: none;
-      color: #60a5fa;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: underline;
-      padding: 0;
-      margin-left: 8px;
-      font-size: 1rem;
-      user-select: text;
-      transition: color 0.3s ease;
-    }
-    .switch-login button:hover {
-      color: #93c5fd;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* Animations */
-    .fadeInUp {
-      animation-duration: 0.6s;
-      animation-fill-mode: both;
-      animation-name: fadeInUp;
-    }
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(40px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* DASHBOARD */
-
-    #dashboardContainer {
-      max-width: 720px;
-      padding: 2rem 3rem 3rem;
-      background: #1e293b;
-      box-shadow:
-        0 10px 30px rgba(37, 99, 235, 0.7),
-        inset 0 0 20px #3b82f6aa;
-      border-radius: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      user-select: text;
-    }
-
-    #dashboardWelcome {
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      color: #93c5fd;
-      text-shadow: 0 0 8px #60a5fa;
-      user-select: none;
-    }
-
-    #dashboardNav {
-      display: flex;
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    #dashboardNav button {
-      flex: 1 1 140px;
-      padding: 0.9rem 0;
-      border-radius: 2rem;
-      font-weight: 700;
-      font-size: 1.15rem;
-      background: #3b82f6;
-      color: white;
-      box-shadow:
-        0 8px 22px rgba(59, 130, 246, 0.85);
-      cursor: pointer;
-      user-select: none;
-      transition: background-color 0.3s ease, box-shadow 0.3s ease;
-      border: none;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-    }
-    #dashboardNav button.active,
-    #dashboardNav button:hover {
-      background: #60a5fa;
-      box-shadow:
-        0 12px 30px rgba(96, 165, 250, 1);
-      color: #f0f9ff;
-    }
-
-    #logoutBtn {
-      background: #ef4444 !important;
-      box-shadow:
-        0 8px 22px rgba(239, 68, 68, 0.9) !important;
-    }
-    #logoutBtn:hover {
-      background: #f87171 !important;
-      box-shadow:
-        0 12px 30px rgba(248, 113, 113, 1) !important;
-    }
-
-    .pageContent {
-      background: #334155;
-      border-radius: 1.25rem;
-      padding: 2rem;
-      color: #e0e7ff;
-      min-height: 350px;
-      max-height: 520px;
-      overflow-y: auto;
-      box-shadow:
-        inset 0 0 15px rgba(66, 153, 225, 0.5);
-      font-size: 1.1rem;
-      line-height: 1.6;
-      user-select: text;
-    }
-    .pageContent h3 {
-      font-weight: 700;
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-      color: #bfdbfe;
-      text-shadow: 0 0 8px #3b82f6;
-    }
-    .pageContent ul {
-      list-style-type: none;
-      padding-left: 0;
-    }
-    .pageContent li {
-      background: #1e293b;
-      margin-bottom: 1rem;
-      border-radius: 1rem;
-      padding: 1rem 1.25rem;
-      box-shadow:
-        0 6px 18px rgba(96, 165, 250, 0.3);
-      transition: background-color 0.25s ease;
-      word-break: break-word;
-    }
-    .pageContent li:hover {
-      background: #3b82f6;
-      color: white;
-      box-shadow:
-        0 10px 26px rgba(96, 165, 250, 0.7);
-    }
-    .pageContent a {
-      color: #bfdbfe;
-      text-decoration: underline;
-      transition: color 0.25s ease;
-    }
-    .pageContent a:hover {
-      color: #60a5fa;
-    }
-
-    /* Scrollbar styles */
-    .pageContent::-webkit-scrollbar {
-      width: 10px;
-    }
-    .pageContent::-webkit-scrollbar-track {
-      background: #1e293b;
-      border-radius: 1rem;
-    }
-    .pageContent::-webkit-scrollbar-thumb {
-      background: #60a5fa;
-      border-radius: 1rem;
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <div class="container" id="loginContainer" role="main" aria-label="Login container">
+<div id="app">
+  <header>Employee Dashboard</header>
 
-    <!-- LOGIN PAGES -->
-    <section id="adminLoginPage" class="fadeInUp hidden" aria-labelledby="adminLoginTitle" tabindex="0">
-      <h2 id="adminLoginTitle">Admin Login</h2>
-      <input type="text" id="adminUser" placeholder="Admin Username" autocomplete="off" aria-label="Admin Username" />
-      <input type="password" id="adminPass" placeholder="Admin Password" autocomplete="off" aria-label="Admin Password" />
-      <button onclick="adminLogin()" aria-label="Login as Admin">Login as Admin</button>
-      <p class="switch-login">
-        Not admin? <button onclick="showLoginPage('user')" aria-label="Switch to User Login">User Login</button>
-      </p>
-    </section>
+  <!-- Admin Login Page -->
+  <section id="adminLogin" class="login-page">
+    <form id="adminLoginForm" class="login-form" onsubmit="event.preventDefault(); adminLogin()">
+      <label for="adminUser">Admin Username</label>
+      <input id="adminUser" type="text" required autocomplete="username" placeholder="Enter admin username" />
+      <label for="adminPass">Admin Password</label>
+      <input id="adminPass" type="password" required autocomplete="current-password" placeholder="Enter admin password" />
+      <button type="submit" class="btn">Admin Login</button>
+      <div class="login-toggle">Are you an employee? <span onclick="switchToUserLogin()">User Login</span></div>
+    </form>
+  </section>
 
-    <section id="userLoginPage" class="fadeInUp" aria-labelledby="userLoginTitle" tabindex="0">
-      <h2 id="userLoginTitle">User Login</h2>
-      <input type="text" id="userName" placeholder="Username" autocomplete="off" aria-label="Username" />
-      <input type="text" id="userKey" placeholder="Access Key" autocomplete="off" aria-label="User Access Key" />
-      <button onclick="userLogin()" aria-label="Login as User">Login as User</button>
-      <p class="switch-login">
-        Are you admin? <button onclick="showLoginPage('admin')" aria-label="Switch to Admin Login">Admin Login</button>
-      </p>
-    </section>
-  </div>
+  <!-- User Login Page -->
+  <section id="userLogin" class="login-page" style="display:none;">
+    <form id="userLoginForm" class="login-form" onsubmit="event.preventDefault(); userLogin()">
+      <label for="userUsername">Username</label>
+      <input id="userUsername" type="text" required autocomplete="username" placeholder="Enter your username" />
+      <label for="userKey">Access Key</label>
+      <input id="userKey" type="password" required autocomplete="off" placeholder="Enter your unique key" />
+      <button type="submit" class="btn">User Login</button>
+      <div class="login-toggle">Are you admin? <span onclick="switchToAdminLogin()">Admin Login</span></div>
+    </form>
+  </section>
 
-  <div class="container hidden" id="dashboardContainer" role="main" aria-label="Dashboard container">
-    <div id="dashboardWelcome" aria-live="polite"></div>
-    <nav id="dashboardNav" role="navigation" aria-label="Dashboard navigation">
-      <button id="btnReports" onclick="loadPage('reports')" aria-controls="pageContent" aria-selected="false">Reports</button>
-      <button id="btnPayments" onclick="loadPage('payments')" aria-controls="pageContent" aria-selected="false">Payments</button>
-      <button id="btnNotices" onclick="loadPage('notices')" aria-controls="pageContent" aria-selected="false">Notices</button>
-      <button id="logoutBtn" onclick="logout()" aria-label="Logout">Logout</button>
-    </nav>
-    <div id="pageContent" class="pageContent" tabindex="0" aria-live="polite"></div>
-  </div>
+  <!-- Dashboard -->
+  <section id="dashboard" style="display:none;">
+    <div class="nav-buttons" id="navButtons">
+      <!-- Buttons will be added dynamically -->
+    </div>
+
+    <div class="content-area" id="contentArea">
+      <!-- Content will be loaded here -->
+    </div>
+
+    <button id="logoutBtn" onclick="logout()">Logout</button>
+  </section>
+</div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
-  // Firebase config (replace with your own)
+  // Firebase config (replace with your config)
   const firebaseConfig = {
     apiKey: "AIzaSyBImNhuhq_k4XrVLXmOxOxbN4sNQhMd5PI",
     authDomain: "employeedashboard-ab719.firebaseapp.com",
@@ -338,340 +292,558 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  let currentRole = null;
-  let currentUser = null;
+  let currentUser = null;   // store logged-in user info
+  let currentRole = null;   // 'admin' or 'user'
 
-  // Show login page, 'admin' or 'user'
-  function showLoginPage(role) {
-    currentRole = null;
-    currentUser = null;
-    document.getElementById('loginContainer').classList.remove('hidden');
-    document.getElementById('dashboardContainer').classList.add('hidden');
-    if(role === 'admin') {
-      document.getElementById('adminLoginPage').classList.remove('hidden');
-      document.getElementById('userLoginPage').classList.add('hidden');
-    } else {
-      document.getElementById('userLoginPage').classList.remove('hidden');
-      document.getElementById('adminLoginPage').classList.add('hidden');
-    }
+  // Show admin login, hide others
+  function showAdminLogin() {
+    document.getElementById('adminLogin').style.display = 'block';
+    document.getElementById('userLogin').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'none';
+  }
+  // Show user login, hide others
+  function showUserLogin() {
+    document.getElementById('adminLogin').style.display = 'none';
+    document.getElementById('userLogin').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+  }
+  // Show dashboard, hide others
+  function showDashboard() {
+    document.getElementById('adminLogin').style.display = 'none';
+    document.getElementById('userLogin').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
   }
 
-  // Admin login
+  // Switch login pages
+  function switchToUserLogin() {
+    showUserLogin();
+  }
+  function switchToAdminLogin() {
+    showAdminLogin();
+  }
+
+  // Admin login function
   async function adminLogin() {
-    const username = document.getElementById('adminUser').value.trim();
-    const password = document.getElementById('adminPass').value.trim();
-    if(!username || !password) {
+    const user = document.getElementById('adminUser').value.trim();
+    const pass = document.getElementById('adminPass').value.trim();
+
+    if (!user || !pass) {
       Swal.fire('Error', 'Please enter username and password', 'error');
       return;
     }
     try {
-      const docRef = db.collection('admins').doc(username);
-      const doc = await docRef.get();
-      if(!doc.exists) {
-        Swal.fire('Error', 'Admin not found', 'error');
+      const doc = await db.collection('admins').doc(user).get();
+      if (!doc.exists) {
+        Swal.fire('Error', 'Admin user not found', 'error');
         return;
       }
       const data = doc.data();
-      if(data.password !== password) {
+      if (data.password !== pass) {
         Swal.fire('Error', 'Incorrect password', 'error');
         return;
       }
+      currentUser = user;
       currentRole = 'admin';
-      currentUser = username;
-      Swal.fire('Success', 'Login successful', 'success');
+      loadAdminDashboard();
       showDashboard();
-    } catch(e) {
-      Swal.fire('Error', 'Login failed', 'error');
-      console.error(e);
+      Swal.fire('Success', 'Logged in as Admin', 'success');
+    } catch (e) {
+      Swal.fire('Error', 'Failed to login: ' + e.message, 'error');
     }
   }
 
-  // User login (with username and key)
+  // User login function
   async function userLogin() {
-    const username = document.getElementById('userName').value.trim();
+    const username = document.getElementById('userUsername').value.trim();
     const key = document.getElementById('userKey').value.trim();
-    if(!username || !key) {
+
+    if (!username || !key) {
       Swal.fire('Error', 'Please enter username and access key', 'error');
       return;
     }
     try {
-      const docRef = db.collection('users').doc(username);
-      const doc = await docRef.get();
-      if(!doc.exists) {
+      const doc = await db.collection('users').doc(username).get();
+      if (!doc.exists) {
         Swal.fire('Error', 'User not found', 'error');
         return;
       }
       const data = doc.data();
-      if(data.key !== key) {
-        Swal.fire('Error', 'Incorrect access key', 'error');
+      if (data.key !== key) {
+        Swal.fire('Error', 'Invalid access key', 'error');
         return;
       }
-      currentRole = 'user';
       currentUser = username;
-      Swal.fire('Success', 'Login successful', 'success');
+      currentRole = 'user';
+      loadUserDashboard();
       showDashboard();
-    } catch(e) {
-      Swal.fire('Error', 'Login failed', 'error');
-      console.error(e);
+      Swal.fire('Success', 'Logged in as User', 'success');
+    } catch (e) {
+      Swal.fire('Error', 'Failed to login: ' + e.message, 'error');
     }
   }
 
-  // Show dashboard UI
-  function showDashboard() {
-    document.getElementById('loginContainer').classList.add('hidden');
-    document.getElementById('dashboardContainer').classList.remove('hidden');
-    document.getElementById('dashboardWelcome').textContent = `Welcome, ${currentUser} (${currentRole})`;
-    // Load reports by default
-    loadPage('reports');
-  }
-
-  // Logout function
+  // Logout
   function logout() {
     Swal.fire({
       title: 'Logout?',
-      text: "Are you sure you want to logout?",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#2563eb',
-      cancelButtonColor: '#ef4444',
-      confirmButtonText: 'Yes, logout'
+      confirmButtonText: 'Yes, logout',
+      cancelButtonText: 'Cancel',
     }).then((result) => {
-      if(result.isConfirmed) {
+      if(result.isConfirmed){
         currentUser = null;
         currentRole = null;
-        showLoginPage('user');
+        clearDashboard();
+        showUserLogin();
       }
     });
   }
 
-  // Load specific page content: 'reports', 'payments', 'notices'
-  async function loadPage(page) {
-    // Update nav active state
-    ['btnReports','btnPayments','btnNotices'].forEach(btnId => {
-      document.getElementById(btnId).classList.remove('active');
+  // Clear dashboard content & nav
+  function clearDashboard() {
+    document.getElementById('navButtons').innerHTML = '';
+    document.getElementById('contentArea').innerHTML = '';
+  }
+
+  // Load admin dashboard - show nav buttons with management options
+  function loadAdminDashboard() {
+    clearDashboard();
+    const nav = document.getElementById('navButtons');
+
+    const buttons = [
+      { id: 'manageUsers', text: 'Manage Users', handler: loadManageUsers },
+      { id: 'sendReport', text: 'Send Report', handler: showAddReport },
+      { id: 'sendPayment', text: 'Send Payment', handler: showAddPayment },
+      { id: 'sendNotice', text: 'Send Notice', handler: showAddNotice },
+      { id: 'viewReports', text: 'View Reports', handler: () => loadReports(true) },
+      { id: 'viewPayments', text: 'View Payments', handler: () => loadPayments(true) },
+      { id: 'viewNotices', text: 'View Notices', handler: () => loadNotices() },
+    ];
+
+    buttons.forEach(btn => {
+      const b = document.createElement('button');
+      b.textContent = btn.text;
+      b.id = btn.id;
+      b.onclick = () => {
+        setActiveNav(btn.id);
+        btn.handler();
+      };
+      nav.appendChild(b);
     });
-    document.getElementById('btn' + capitalize(page)).classList.add('active');
 
-    const dashboardContent = document.getElementById('pageContent');
-    dashboardContent.innerHTML = `<p class="text-center text-gray-400 animate-pulse">Loading ${page}...</p>`;
+    // Load default page
+    setActiveNav('manageUsers');
+    loadManageUsers();
+  }
 
+  // Load user dashboard - user can view only their reports, payments, notices
+  function loadUserDashboard() {
+    clearDashboard();
+    const nav = document.getElementById('navButtons');
+
+    const buttons = [
+      { id: 'viewReports', text: 'Reports', handler: () => loadReports(false) },
+      { id: 'viewPayments', text: 'Payments', handler: () => loadPayments(false) },
+      { id: 'viewNotices', text: 'Notices', handler: () => loadNotices() },
+    ];
+
+    buttons.forEach(btn => {
+      const b = document.createElement('button');
+      b.textContent = btn.text;
+      b.id = btn.id;
+      b.onclick = () => {
+        setActiveNav(btn.id);
+        btn.handler();
+      };
+      nav.appendChild(b);
+    });
+
+    // Load default page
+    setActiveNav('viewReports');
+    loadReports(false);
+  }
+
+  // Set active nav button style
+  function setActiveNav(id) {
+    const buttons = document.getElementById('navButtons').children;
+    for(let btn of buttons) {
+      btn.classList.toggle('active', btn.id === id);
+    }
+  }
+
+  // ================== Manage Users (Admin Only) ==================
+  async function loadManageUsers() {
+    const content = document.getElementById('contentArea');
+    content.innerHTML = `
+      <h2>Manage Users</h2>
+      <button class="action-btn" onclick="showAddUser()">Add New User</button>
+      <div id="usersList" style="margin-top:20px;"></div>
+    `;
+    await renderUsersList();
+  }
+
+  async function renderUsersList() {
+    const listContainer = document.getElementById('usersList');
+    listContainer.innerHTML = 'Loading users...';
     try {
-      if(page === 'reports') {
-        await loadReports(dashboardContent);
-      } else if(page === 'payments') {
-        await loadPayments(dashboardContent);
-      } else if(page === 'notices') {
-        await loadNotices(dashboardContent);
+      const snapshot = await db.collection('users').orderBy('username').get();
+      if (snapshot.empty) {
+        listContainer.innerHTML = '<p>No users found.</p>';
+        return;
       }
+      let html = `<table>
+        <thead><tr><th>Username</th><th>Key</th><th>Actions</th></tr></thead><tbody>`;
+      snapshot.forEach(doc => {
+        const user = doc.data();
+        html += `<tr>
+          <td>${doc.id}</td>
+          <td>${user.key}</td>
+          <td>
+            <button onclick="showEditUser('${doc.id}', '${user.key}')">Edit</button>
+            <button onclick="deleteUser('${doc.id}')">Delete</button>
+          </td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      listContainer.innerHTML = html;
     } catch(e) {
-      dashboardContent.innerHTML = `<p class="text-center text-red-500">Failed to load ${page} data.</p>`;
+      listContainer.innerHTML = '<p>Error loading users.</p>';
       console.error(e);
     }
   }
 
-  // Capitalize first letter helper
-  function capitalize(s) {
-    return s.charAt(0).toUpperCase() + s.slice(1);
-  }
-
-  // Load reports
-  async function loadReports(container) {
-    let query = db.collection('reports').orderBy('date', 'desc').limit(30);
-    if(currentRole === 'user') {
-      query = query.where('employee', '==', currentUser);
-    }
-    const snapshot = await query.get();
-    if(snapshot.empty) {
-      container.innerHTML = '<p class="text-center text-gray-400">No reports found.</p>';
-      return;
-    }
-    let html = '<h3>Reports</h3><ul>';
-    snapshot.forEach(doc => {
-      const d = doc.data();
-      html += `
-        <li>
-          <strong>Date:</strong> ${d.date} <br/>
-          <strong>To:</strong> ${d.employee} <br/>
-          <strong>Message:</strong> ${d.message} <br/>
-          ${d.fileUrl ? `<a href="${d.fileUrl}" target="_blank" rel="noopener noreferrer" class="underline text-blue-300">View File</a>` : ''}
-        </li>
-      `;
-    });
-    html += '</ul>';
-    if(currentRole === 'admin') {
-      html += `<button class="mt-6" onclick="showAddReport()">Add Report</button>`;
-    }
-    container.innerHTML = html;
-  }
-
-  // Load payments
-  async function loadPayments(container) {
-    let query = db.collection('payments').orderBy('date', 'desc').limit(30);
-    if(currentRole === 'user') {
-      query = query.where('employee', '==', currentUser);
-    }
-    const snapshot = await query.get();
-    if(snapshot.empty) {
-      container.innerHTML = '<p class="text-center text-gray-400">No payments found.</p>';
-      return;
-    }
-    let html = '<h3>Payments</h3><ul>';
-    snapshot.forEach(doc => {
-      const d = doc.data();
-      html += `
-        <li>
-          <strong>Date:</strong> ${d.date} <br/>
-          <strong>Employee:</strong> ${d.employee} <br/>
-          <strong>Amount:</strong> ${d.amount} <br/>
-          <strong>Note:</strong> ${d.note || '-'} <br/>
-          <strong>Message:</strong> ${d.message || '-'}
-        </li>
-      `;
-    });
-    html += '</ul>';
-    if(currentRole === 'admin') {
-      html += `<button class="mt-6" onclick="showAddPayment()">Add Payment</button>`;
-    }
-    container.innerHTML = html;
-  }
-
-  // Load notices
-  async function loadNotices(container) {
-    const snapshot = await db.collection('notices').orderBy('date', 'desc').limit(30).get();
-    if(snapshot.empty) {
-      container.innerHTML = '<p class="text-center text-gray-400">No notices found.</p>';
-      return;
-    }
-    let html = '<h3>Notices</h3><ul>';
-    snapshot.forEach(doc => {
-      const d = doc.data();
-      html += `
-        <li>
-          <strong>Date:</strong> ${d.date} <br/>
-          <strong>Message:</strong> ${d.message}
-        </li>
-      `;
-    });
-    html += '</ul>';
-    if(currentRole === 'admin') {
-      html += `<button class="mt-6" onclick="showAddNotice()">Add Notice</button>`;
-    }
-    container.innerHTML = html;
-  }
-
-  // Show Add Report modal for admin
-  function showAddReport() {
+  function showAddUser() {
     Swal.fire({
-      title: 'Add New Report',
+      title: 'Add New User',
       html:
-        `<input id="swal-report-employee" class="swal2-input" placeholder="Employee Username" autocomplete="off">` +
-        `<input id="swal-report-date" type="date" class="swal2-input" placeholder="Date">` +
-        `<textarea id="swal-report-message" class="swal2-textarea" placeholder="Report message"></textarea>` +
-        `<input id="swal-report-file" class="swal2-input" placeholder="File URL (optional)" autocomplete="off">`,
-      focusConfirm: false,
-      preConfirm: () => {
-        return {
-          employee: document.getElementById('swal-report-employee').value.trim(),
-          date: document.getElementById('swal-report-date').value,
-          message: document.getElementById('swal-report-message').value.trim(),
-          fileUrl: document.getElementById('swal-report-file').value.trim(),
+        `<input id="swal-user-username" class="swal2
+```
+
+
+-input" placeholder="Username">`+
+       `<input id="swal-user-key" class="swal2-input" placeholder="Access Key">\`,
+focusConfirm: false,
+preConfirm: () => {
+const username = Swal.getPopup().querySelector('#swal-user-username').value.trim();
+const key = Swal.getPopup().querySelector('#swal-user-key').value.trim();
+if (!username || !key) {
+Swal.showValidationMessage('Both username and key are required');
+return false;
+}
+return { username, key };
+}
+}).then(async (result) => {
+if(result.isConfirmed){
+try {
+await db.collection('users').doc(result.value.username).set({ key: result.value.key });
+Swal.fire('Success', 'User added successfully', 'success');
+renderUsersList();
+} catch(e) {
+Swal.fire('Error', 'Failed to add user: ' + e.message, 'error');
+}
+}
+});
+}
+
+function showEditUser(username, currentKey) {
+Swal.fire({
+title: `Edit User: ${username}`,
+html:
+`<input id="swal-user-key" class="swal2-input" placeholder="Access Key" value="${currentKey}">`,
+focusConfirm: false,
+preConfirm: () => {
+const key = Swal.getPopup().querySelector('#swal-user-key').value.trim();
+if (!key) {
+Swal.showValidationMessage('Key cannot be empty');
+return false;
+}
+return { key };
+}
+}).then(async (result) => {
+if(result.isConfirmed){
+try {
+await db.collection('users').doc(username).update({ key: result.value.key });
+Swal.fire('Success', 'User updated successfully', 'success');
+renderUsersList();
+} catch(e) {
+Swal.fire('Error', 'Failed to update user: ' + e.message, 'error');
+}
+}
+});
+}
+
+async function deleteUser(username) {
+const confirmed = await Swal.fire({
+title: `Delete user "${username}"?`,
+icon: 'warning',
+showCancelButton: true,
+confirmButtonText: 'Yes, delete',
+cancelButtonText: 'Cancel',
+});
+if(confirmed.isConfirmed){
+try {
+await db.collection('users').doc(username).delete();
+Swal.fire('Deleted', 'User deleted successfully', 'success');
+renderUsersList();
+} catch(e) {
+Swal.fire('Error', 'Failed to delete user: ' + e.message, 'error');
+}
+}
+}
+
+// ================== Send Report ==================
+async function showAddReport() {
+const users = await getAllUsers();
+if(users.length === 0){
+Swal.fire('Info', 'No users available to send report.', 'info');
+return loadManageUsers();
+}
+let options = users.map(u => `<option value="${u}">${u}</option>`).join('');
+const html = `       <div class="form-group">         <label>Select User</label>         <select id="reportUser">${options}</select>       </div>       <div class="form-group">         <label>Report Title</label>         <input type="text" id="reportTitle" placeholder="Report title" />       </div>       <div class="form-group">         <label>Report Details</label>         <textarea id="reportDetails" placeholder="Write report details..."></textarea>       </div>
+    `;
+Swal.fire({
+title: 'Send Report',
+html,
+focusConfirm: false,
+showCancelButton: true,
+confirmButtonText: 'Send',
+preConfirm: () => {
+const user = document.getElementById('reportUser').value;
+const title = document.getElementById('reportTitle').value.trim();
+const details = document.getElementById('reportDetails').value.trim();
+if(!user || !title || !details) {
+Swal.showValidationMessage('Please fill all fields');
+return false;
+}
+return { user, title, details };
+}
+}).then(async (result) => {
+if(result.isConfirmed) {
+try {
+// Save report only for selected user
+await db.collection('reports').add({
+username: result.value.user,
+title: result.value.title,
+details: result.value.details,
+timestamp: firebase.firestore.FieldValue.serverTimestamp()
+});
+Swal.fire('Success', 'Report sent to user: ' + result.value.user, 'success');
+loadAdminDashboard();
+} catch(e) {
+Swal.fire('Error', 'Failed to send report: ' + e.message, 'error');
+}
+}
+});
+}
+
+// ================== Send Payment ==================
+async function showAddPayment() {
+const users = await getAllUsers();
+if(users.length === 0){
+Swal.fire('Info', 'No users available to send payment.', 'info');
+return loadManageUsers();
+}
+let options = users.map(u => `<option value="${u}">${u}</option>`).join('');
+const html = `       <div class="form-group">         <label>Select User</label>         <select id="paymentUser">${options}</select>       </div>       <div class="form-group">         <label>Payment Date</label>         <input type="date" id="paymentDate" />       </div>       <div class="form-group">         <label>Amount</label>         <input type="number" id="paymentAmount" min="1" placeholder="Amount in currency" />       </div>       <div class="form-group">         <label>Note</label>         <textarea id="paymentNote" placeholder="Optional note"></textarea>       </div>
+    `;
+Swal.fire({
+title: 'Send Payment Details',
+html,
+focusConfirm: false,
+showCancelButton: true,
+confirmButtonText: 'Send',
+preConfirm: () => {
+const user = document.getElementById('paymentUser').value;
+const date = document.getElementById('paymentDate').value;
+const amount = document.getElementById('paymentAmount').value.trim();
+if(!user || !date || !amount) {
+Swal.showValidationMessage('Please fill all required fields');
+return false;
+}
+return { user, date, amount, note: document.getElementById('paymentNote').value.trim() };
+}
+}).then(async (result) => {
+if(result.isConfirmed) {
+try {
+// Save payment only for selected user
+await db.collection('payments').add({
+username: result.value.user,
+date: result.value.date,
+amount: Number(result.value.amount),
+note: result.value.note || '',
+timestamp: firebase.firestore.FieldValue.serverTimestamp()
+});
+Swal.fire('Success', 'Payment info sent to user: ' + result.value.user, 'success');
+          loadAdminDashboard();
+        } catch(e) {
+          Swal.fire('Error', 'Failed to send payment info: ' + e.message, 'error');
         }
+      }
+    });
+  }
+
+  // ================== Send Notice ==================
+  async function showAddNotice() {
+    const html = `
+      <div class="form-group">
+        <label>Notice Title</label>
+        <input type="text" id="noticeTitle" placeholder="Notice title" />
+      </div>
+      <div class="form-group">
+        <label>Notice Details</label>
+        <textarea id="noticeDetails" placeholder="Write notice here..."></textarea>
+      </div>
+    `;
+    Swal.fire({
+      title: 'Send Notice (to All Users)',
+      html,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Send',
+      preConfirm: () => {
+        const title = document.getElementById('noticeTitle').value.trim();
+        const details = document.getElementById('noticeDetails').value.trim();
+        if(!title || !details) {
+          Swal.showValidationMessage('Please fill all fields');
+          return false;
+        }
+        return { title, details };
       }
     }).then(async (result) => {
       if(result.isConfirmed) {
-        const r = result.value;
-        if(!r.employee || !r.date || !r.message) {
-          Swal.fire('Error', 'Please fill all required fields', 'error');
-          return;
-        }
         try {
-          await db.collection('reports').add(r);
-          Swal.fire('Success', 'Report added', 'success');
-          loadPage('reports');
+          // Save notice for all users (no user field)
+          await db.collection('notices').add({
+            title: result.value.title,
+            details: result.value.details,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          Swal.fire('Success', 'Notice sent to all users', 'success');
+          loadAdminDashboard();
         } catch(e) {
-          Swal.fire('Error', 'Failed to add report', 'error');
-          console.error(e);
+          Swal.fire('Error', 'Failed to send notice: ' + e.message, 'error');
         }
       }
     });
   }
 
-  // Show Add Payment modal for admin
-  function showAddPayment() {
-    Swal.fire({
-      title: 'Add New Payment',
-      html:
-        `<input id="swal-payment-employee" class="swal2-input" placeholder="Employee Username" autocomplete="off">` +
-        `<input id="swal-payment-date" type="date" class="swal2-input" placeholder="Date">` +
-        `<input id="swal-payment-amount" type="number" class="swal2-input" placeholder="Amount">` +
-        `<input id="swal-payment-note" class="swal2-input" placeholder="Note (optional)" autocomplete="off">` +
-        `<textarea id="swal-payment-message" class="swal2-textarea" placeholder="Message (optional)"></textarea>`,
-      focusConfirm: false,
-      preConfirm: () => {
-        return {
-          employee: document.getElementById('swal-payment-employee').value.trim(),
-          date: document.getElementById('swal-payment-date').value,
-          amount: document.getElementById('swal-payment-amount').value,
-          note: document.getElementById('swal-payment-note').value.trim(),
-          message: document.getElementById('swal-payment-message').value.trim(),
-        }
+  // ================== Load Reports ==================
+  async function loadReports(isAdmin) {
+    const content = document.getElementById('contentArea');
+    content.innerHTML = '<h2>Reports</h2><p>Loading...</p>';
+    try {
+      let query = db.collection('reports').orderBy('timestamp', 'desc');
+      if(!isAdmin) {
+        query = query.where('username', '==', currentUser);
       }
-    }).then(async (result) => {
-      if(result.isConfirmed) {
-        const r = result.value;
-        if(!r.employee || !r.date || !r.amount) {
-          Swal.fire('Error', 'Please fill all required fields', 'error');
-          return;
-        }
-        try {
-          await db.collection('payments').add(r);
-          Swal.fire('Success', 'Payment added', 'success');
-          loadPage('payments');
-        } catch(e) {
-          Swal.fire('Error', 'Failed to add payment', 'error');
-          console.error(e);
-        }
+      const snapshot = await query.get();
+      if (snapshot.empty) {
+        content.innerHTML = '<h2>Reports</h2><p>No reports found.</p>';
+        return;
       }
-    });
+      let html = `<h2>Reports</h2><table>
+        <thead><tr><th>User</th><th>Title</th><th>Details</th><th>Time</th></tr></thead><tbody>`;
+      snapshot.forEach(doc => {
+        const r = doc.data();
+        const timeStr = r.timestamp ? new Date(r.timestamp.seconds*1000).toLocaleString() : '-';
+        html += `<tr>
+          <td>${r.username}</td>
+          <td>${r.title}</td>
+          <td>${r.details}</td>
+          <td>${timeStr}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      content.innerHTML = html;
+    } catch(e) {
+      content.innerHTML = '<h2>Reports</h2><p>Error loading reports.</p>';
+      console.error(e);
+    }
   }
 
-  // Show Add Notice modal for admin
-  function showAddNotice() {
-    Swal.fire({
-      title: 'Add New Notice',
-      html:
-        `<input id="swal-notice-date" type="date" class="swal2-input" placeholder="Date">` +
-        `<textarea id="swal-notice-message" class="swal2-textarea" placeholder="Notice message"></textarea>`,
-      focusConfirm: false,
-      preConfirm: () => {
-        return {
-          date: document.getElementById('swal-notice-date').value,
-          message: document.getElementById('swal-notice-message').value.trim(),
-        }
+  // ================== Load Payments ==================
+  async function loadPayments(isAdmin) {
+    const content = document.getElementById('contentArea');
+    content.innerHTML = '<h2>Payments</h2><p>Loading...</p>';
+    try {
+      let query = db.collection('payments').orderBy('timestamp', 'desc');
+      if(!isAdmin) {
+        query = query.where('username', '==', currentUser);
       }
-    }).then(async (result) => {
-      if(result.isConfirmed) {
-        const r = result.value;
-        if(!r.date || !r.message) {
-          Swal.fire('Error', 'Please fill all required fields', 'error');
-          return;
-        }
-        try {
-          await db.collection('notices').add(r);
-          Swal.fire('Success', 'Notice added', 'success');
-          loadPage('notices');
-        } catch(e) {
-          Swal.fire('Error', 'Failed to add notice', 'error');
-          console.error(e);
-        }
+      const snapshot = await query.get();
+      if (snapshot.empty) {
+        content.innerHTML = '<h2>Payments</h2><p>No payments found.</p>';
+        return;
       }
-    });
+      let html = `<h2>Payments</h2><table>
+        <thead><tr><th>User</th><th>Date</th><th>Amount</th><th>Note</th><th>Time</th></tr></thead><tbody>`;
+      snapshot.forEach(doc => {
+        const p = doc.data();
+        const timeStr = p.timestamp ? new Date(p.timestamp.seconds*1000).toLocaleString() : '-';
+        html += `<tr>
+          <td>${p.username}</td>
+          <td>${p.date}</td>
+          <td>${p.amount}</td>
+          <td>${p.note}</td>
+          <td>${timeStr}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      content.innerHTML = html;
+    } catch(e) {
+      content.innerHTML = '<h2>Payments</h2><p>Error loading payments.</p>';
+      console.error(e);
+    }
   }
 
-  // On load show user login page by default
-  window.onload = () => {
-    showLoginPage('user');
+  // ================== Load Notices ==================
+  async function loadNotices() {
+    const content = document.getElementById('contentArea');
+    content.innerHTML = '<h2>Notices</h2><p>Loading...</p>';
+    try {
+      const snapshot = await db.collection('notices').orderBy('timestamp', 'desc').get();
+      if (snapshot.empty) {
+        content.innerHTML = '<h2>Notices</h2><p>No notices found.</p>';
+        return;
+      }
+      let html = `<h2>Notices</h2><table>
+        <thead><tr><th>Title</th><th>Details</th><th>Time</th></tr></thead><tbody>`;
+      snapshot.forEach(doc => {
+        const n = doc.data();
+        const timeStr = n.timestamp ? new Date(n.timestamp.seconds*1000).toLocaleString() : '-';
+        html += `<tr>
+          <td>${n.title}</td>
+          <td>${n.details}</td>
+          <td>${timeStr}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      content.innerHTML = html;
+    } catch(e) {
+      content.innerHTML = '<h2>Notices</h2><p>Error loading notices.</p>';
+      console.error(e);
+    }
   }
+
+  // Utility: get all usernames for dropdown
+  async function getAllUsers() {
+    try {
+      const snapshot = await db.collection('users').get();
+      if(snapshot.empty) return [];
+      const users = [];
+      snapshot.forEach(doc => {
+        users.push(doc.id);
+      });
+      return users;
+    } catch(e) {
+      console.error('Failed to fetch users:', e);
+      return [];
+    }
+  }
+
+  // Init show user login on load
+  showUserLogin();
 </script>
 </body>
 </html>
