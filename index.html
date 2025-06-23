@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Employee Dashboard - Multi-Page UI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    /* Glassmorphic body background */
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #f0f4f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    /* Container */
+    #app {
+      background: rgba(255 255 255 / 0.1);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      padding: 2rem;
+      box-sizing: border-box;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      min-height: 90vh;
+    }
+
+    /* Header */
+    h1, h2 {
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      margin: 0 0 1rem 0;
+      user-select: none;
+      text-align: center;
+      color: #e0e7ff;
+    }
+
+    /* Login Panel */
+    #login-panel {
+      max-width: 400px;
+      margin: auto;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: #cbd5e1;
+    }
+    input[type="text"],
+    input[type="password"],
+    input[type="date"],
+    input[type="number"] {
+      width: 100%;
+      padding: 0.6rem 1rem;
+      border-radius: 12px;
+      border: 1.5px solid rgba(255 255 255 / 0.3);
+      background: rgba(255 255 255 / 0.1);
+      color: #f8fafc;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      transition: border-color 0.3s ease;
+      outline-offset: 2px;
+    }
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    input[type="date"]:focus,
+    input[type="number"]:focus {
+      border-color: #a78bfa;
+      background: rgba(255 255 255 / 0.15);
+    }
+
+    button {
+      padding: 0.75rem 0;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: white;
+      border: none;
+      cursor: pointer;
+      user-select: none;
+      margin-top: 0.3rem;
+      margin-bottom: 1rem;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      width: 100%;
+    }
+    button:active {
+      transform: scale(0.96);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .btn-green {
+      background: linear-gradient(90deg, #4ade80, #16a34a);
+      box-shadow: 0 8px 30px #22c55eaa;
+    }
+    .btn-green:hover:not(:disabled) {
+      background: linear-gradient(90deg, #22c55e, #15803d);
+    }
+    .btn-yellow {
+      background: linear-gradient(90deg, #facc15, #ca8a04);
+      box-shadow: 0 8px 30px #eab308aa;
+    }
+    .btn-yellow:hover:not(:disabled) {
+      background: linear-gradient(90deg, #ca8a04, #a16207);
+    }
+    .btn-purple {
+      background: linear-gradient(90deg, #a78bfa, #7c3aed);
+      box-shadow: 0 8px 30px #8b5cf6aa;
+    }
+    .btn-purple:hover:not(:disabled) {
+      background: linear-gradient(90deg, #7c3aed, #5b21b6);
+    }
+
+    /* Tabs Nav */
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid rgba(255 255 255 / 0.25);
+      user-select: none;
+    }
+    .tab {
+      padding: 0.6rem 1.2rem;
+      cursor: pointer;
+      border-radius: 12px 12px 0 0;
+      color: #cbd5e1;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      font-weight: 600;
+    }
+    .tab.active {
+      background: rgba(255 255 255 / 0.15);
+      color: #ede9fe;
+      box-shadow: 0 -3px 15px #a78bfaaa;
+    }
+    .tab:hover:not(.active) {
+      color: #ede9fe;
+    }
+
+    /* Panels */
+    .panel {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 0.5rem 0;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .panel.active {
+      display: block;
+      opacity: 1;
+    }
+
+    /* Card style */
+    .card {
+      background: rgba(255 255 255 / 0.12);
+      border-radius: 14px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 8px 24px rgb(111 66 193 / 0.3);
+      color: #e0e7ff;
+      transition: box-shadow 0.3s ease;
+    }
+    .card:hover {
+      box-shadow: 0 16px 48px rgb(167 139 250 / 0.45);
+    }
+    .card b {
+      color: #ede9fe;
+    }
+
+    /* Scrollbar */
+    .panel::-webkit-scrollbar {
+      width: 6px;
+    }
+    .panel::-webkit-scrollbar-thumb {
+      background: #a78bfa;
+      border-radius: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app">
+    <!-- LOGIN -->
+    <div id="login-panel">
+      <h1>Login</h1>
+      <label for="username">Admin Username or User Key</label>
+      <input type="text" id="username" placeholder="Admin username or user key" autocomplete="off" spellcheck="false" />
+      <label for="password">Password (Admin only)</label>
+      <input type="password" id="password" placeholder="Admin password" autocomplete="off" spellcheck="false" />
+      <button id="login-btn" class="btn-green" onclick="login()">Login</button>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="main-app" style="display:none; flex-direction: column; height: 100%;">
+      <h2 id="welcome-msg" style="text-align:center;"></h2>
+
+      <!-- Tabs navigation -->
+      <div class="tabs" id="tabs">
+        <div class="tab active" data-tab="reports" onclick="switchTab('reports')">Reports</div>
+        <div class="tab" data-tab="payments" onclick="switchTab('payments')">Payments</div>
+        <div class="tab" data-tab="notices" onclick="switchTab('notices')">Notices</div>
+        <div class="tab" data-tab="users" onclick="switchTab('users')">Users</div>
+        <div class="tab" style="color:#f87171;" onclick="logout()">Logout</div>
+      </div>
+
+      <!-- Panels -->
+      <div id="reports" class="panel active">
+        <h3>Your Reports</h3>
+        <div id="reports-list">Loading...</div>
+        <!-- Admin form -->
+        <div id="admin-report-form" style="margin-top: 1rem;"></div>
+      </div>
+
+      <div id="payments" class="panel">
+        <h3>Your Payments</h3>
+        <div id="payments-list">Loading...</div>
+        <div id="admin-payment-form" style="margin-top: 1rem;"></div>
+      </div>
+
+      <div id="notices" class="panel">
+        <h3>Notices</h3>
+        <div id="notices-list">Loading...</div>
+        <div id="admin-notice-form" style="margin-top: 1rem;"></div>
+      </div>
+
+      <div id="users" class="panel" style="display:none;">
+        <h3>User Management</h3>
+        <div id="admin-users-list">Loading...</div>
+        <div id="admin-user-form" style="margin-top: 1rem;"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbxNxxIIxY4_TPXRdQrWpxCFZJqhaRpYqpQafMkkD2jWhji0-0pCkio8ZEZjRzzKK4po1A/exec";
+
+  let currentUser = null; // username/key
+  let isAdmin = false;
+
+  // Switch between tabs
+  function switchTab(tabName) {
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.panel');
+
+    tabs.forEach(t => {
+      t.classList.toggle('active', t.dataset.tab === tabName);
+    });
+    panels.forEach(p => {
+      p.classList.toggle('active', p.id === tabName);
+    });
+  }
+
+  // Show login panel only
+  function showLogin() {
+    document.getElementById("login-panel").style.display = "block";
+    document.getElementById("main-app").style.display = "none";
+    currentUser = null;
+    isAdmin = false;
+  }
+
+  // Show main app panel
+  function showMainApp() {
+    document.getElementById("login-panel").style.display = "none";
+    document.getElementById("main-app").style.display = "flex";
+  }
+
+  // Login function
+  async function login() {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!username) {
+      Swal.fire("Error", "Please enter username or key", "error");
+      return;
+    }
+
+    Swal.showLoading();
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "login", username, password })
+      });
+      const data = await res.json();
+      Swal.close();
+
+      if (!data.success) {
+        Swal.fire("Login Failed", data.message || "Invalid credentials", "error");
+        return;
+      }
+
+      currentUser = username;
+      isAdmin = data.role === "admin";
+
+      // Show welcome message
+      document.getElementById("welcome-msg").textContent = isAdmin 
+        ? `Welcome Admin: ${currentUser}`
+        : `Welcome User: ${currentUser}`;
+
+      // Show main app
+      showMainApp();
+
+      // Load data for the first tab (Reports)
+      await loadReports();
+      await loadPayments();
+      await loadNotices();
+      if (isAdmin) {
+        await loadUsers();
+        showAdminForms();
+      } else {
+        hideAdminForms();
+      }
+
+    } catch (err) {
+      Swal.close();
+      Swal.fire("Error", "Network error or server issue", "error");
+    }
+  }
+
+  // Load Reports for current user
+  async function loadReports() {
+    document.getElementById("reports-list").innerHTML = "Loading...";
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "getReports", username: currentUser })
+      });
+      const data = await res.json();
+      if (data.success && data.reports) {
+        if (data.reports.length === 0) {
+          document.getElementById("reports-list").innerHTML = '<p class="italic text-gray-300">No reports found.</p>';
+        } else {
+          document.getElementById("reports-list").innerHTML = data.reports.map(r => `
+            <div class="card">
+              <b>Date:</b> ${r.date}<br/>
+              <b>Message:</b> ${r.message}<br/>
+              ${r.file ? `<b>File:</b> <a href="${r.file}" target="_blank" class="underline text-indigo-400">Open</a>` : ""}
+            </div>
+          `).join("");
+        }
+      } else {
+        document.getElementById("reports-list").innerHTML = `<p class="italic text-red-400">${data.message || "Failed to load reports"}</p>`;
+      }
+    } catch {
+      document.getElementById("reports-list").innerHTML = `<p class="italic text-red-400">Network error loading reports</p>`;
+    }
+  }
+
+  // Load Payments for current user
+  async function loadPayments() {
+    document.getElementById("payments-list").innerHTML = "Loading...";
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "getPayments", username: currentUser })
+      });
+      const data = await res.json();
+      if (data.success && data.payments) {
+        if (data.payments.length === 0) {
+          document.getElementById("payments-list").innerHTML = '<p class="italic text-gray-300">No payments found.</p>';
+        } else {
+          document.getElementById("payments-list").innerHTML = data.payments.map(p => `
+            <div class="card">
+              <b>Date:</b> ${p.date}<br/>
+              <b>Amount:</b> ${p.amount}<br/>
+              <b>Note:</b> ${p.note || "-"}
+            </div>
+          `).join("");
+        }
+      } else {
+        document.getElementById("payments-list").innerHTML = `<p class="italic text-red-400">${data.message || "Failed to load payments"}</p>`;
+      }
+    } catch {
+      document.getElementById("payments-list").innerHTML = `<p class="italic text-red-400">Network error loading payments</p>`;
+    }
+  }
+
+  // Load Notices (all users)
+  async function loadNotices() {
+    document.getElementById("notices-list").innerHTML = "Loading...";
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "getNotices" })
+      });
+      const data = await res.json();
+      if (data.success && data.notices) {
+        if (data.notices.length === 0) {
+          document.getElementById("notices-list").innerHTML = '<p class="italic text-gray-300">No notices found.</p>';
+        } else {
+          document.getElementById("notices-list").innerHTML = data.notices.map(n => `
+            <div class="card">
+              <b>Date:</b> ${n.date}<br/>
+              <b>Message:</b> ${n.message}
+            </div>
+          `).join("");
+        }
+      } else {
+        document.getElementById("notices-list").innerHTML = `<p class="italic text-red-400">${data.message || "Failed to load notices"}</p>`;
+      }
+    } catch {
+      document.getElementById("notices-list").innerHTML = `<p class="italic text-red-400">Network error loading notices</p>`;
+    }
+  }
+
+  // Load Users (admin only)
+  async function loadUsers() {
+    document.getElementById("admin-users-list").innerHTML = "Loading...";
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "getUsers" })
+      });
+      const data = await res.json();
+      if (data.success && data.users) {
+        if (data.users.length === 0) {
+          document.getElementById("admin-users-list").innerHTML = '<p class="italic text-gray-300">No users found.</p>';
+        } else {
+          document.getElementById("admin-users-list").innerHTML = data.users.map(u => `
+            <div class="card">
+              <b>Username:</b> ${u.username}<br/>
+              <b>Key:</b> ${u.key}
+            </div>
+          `).join("");
+        }
+      } else {
+        document.getElementById("admin-users-list").innerHTML = `<p class="italic text-red-400">${data.message || "Failed to load users"}</p>`;
+      }
+    } catch {
+      document.getElementById("admin-users-list").innerHTML = `<p class="italic text-red-400">Network error loading users</p>`;
+    }
+  }
+
+  // Show admin forms in each tab
+  function showAdminForms() {
+    // Report form
+    document.getElementById("admin-report-form").innerHTML = `
+      <h4 class="mt-4 mb-2">Send Report</h4>
+      <label for="r-name">Employee Name</label>
+      <input id="r-name" type="text" placeholder="Employee username" autocomplete="off" spellcheck="false" />
+      <label for="r-date">Date</label>
+      <input id="r-date" type="date" />
+      <label for="r-message">Message</label>
+      <textarea id="r-message" rows="3" placeholder="Report message" class="w-full rounded-lg p-2 mb-2 bg-transparent border border-gray-400 text-white"></textarea>
+      <label for="r-file">File URL (optional)</label>
+      <input id="r-file" type="text" placeholder="Paste file URL here" autocomplete="off" spellcheck="false" />
+      <button class="btn-purple" onclick="sendReport()">Send Report</button>
+    `;
+
+    // Payment form
+    document.getElementById("admin-payment-form").innerHTML = `
+      <h4 class="mt-4 mb-2">Send Payment</h4>
+      <label for="p-name">Employee Name</label>
+      <input id="p-name" type="text" placeholder="Employee username" autocomplete="off" spellcheck="false" />
+      <label for="p-date">Date</label>
+      <input id="p-date" type="date" />
+      <label for="p-amount">Amount</label>
+      <input id="p-amount" type="number" placeholder="Payment amount" autocomplete="off" />
+      <label for="p-note">Note (optional)</label>
+      <input id="p-note" type="text" placeholder="Note about payment" autocomplete="off" spellcheck="false" />
+      <button class="btn-purple" onclick="sendPayment()">Send Payment</button>
+    `;
+
+    // Notice form
+    document.getElementById("admin-notice-form").innerHTML = `
+      <h4 class="mt-4 mb-2">Send Notice</h4>
+      <label for="n-date">Date</label>
+      <input id="n-date" type="date" />
+      <label for="n-message">Notice Message</label>
+      <textarea id="n-message" rows="3" placeholder="Write notice here" class="w-full rounded-lg p-2 mb-2 bg-transparent border border-gray-400 text-white"></textarea>
+      <button class="btn-purple" onclick="sendNotice()">Send Notice</button>
+    `;
+
+    // User form
+    document.getElementById("admin-user-form").innerHTML = `
+      <h4 class="mt-4 mb-2">Add User</h4>
+      <label for="u-username">Username</label>
+      <input id="u-username" type="text" placeholder="Employee username" autocomplete="off" spellcheck="false" />
+      <label for="u-key">User Key</label>
+      <input id="u-key" type="text" placeholder="User login key" autocomplete="off" spellcheck="false" />
+      <button class="btn-purple" onclick="addUser()">Add User</button>
+    `;
+  }
+
+  // Hide admin forms for normal users
+  function hideAdminForms() {
+    document.getElementById("admin-report-form").innerHTML = "";
+    document.getElementById("admin-payment-form").innerHTML = "";
+    document.getElementById("admin-notice-form").innerHTML = "";
+    document.getElementById("admin-user-form").innerHTML = "";
+  }
+
+  // Send Report (admin only)
+  async function sendReport() {
+    const name = document.getElementById("r-name").value.trim();
+    const date = document.getElementById("r-date").value;
+    const message = document.getElementById("r-message").value.trim();
+    const file = document.getElementById("r-file").value.trim();
+
+    if (!name || !date || !message) {
+      Swal.fire("Error", "Please fill Employee Name, Date, and Message", "error");
+      return;
+    }
+
+    Swal.showLoading();
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "addReport", name, date, message, file })
+      });
+      const text = await res.text();
+      Swal.close();
+
+      if (text.toLowerCase().includes("saved")) {
+        Swal.fire("Success", "Report sent successfully!", "success");
+        loadReports();
+        // Clear inputs
+        document.getElementById("r-name").value = "";
+        document.getElementById("r-date").value = "";
+        document.getElementById("r-message").value = "";
+        document.getElementById("r-file").value = "";
+      } else {
+        Swal.fire("Error", text, "error");
+      }
+    } catch {
+      Swal.close();
+      Swal.fire("Error", "Network error. Please try again.", "error");
+    }
+  }
+
+  // Send Payment (admin only)
+  async function sendPayment() {
+    const name = document.getElementById("p-name").value.trim();
+    const date = document.getElementById("p-date").value;
+    const amount = document.getElementById("p-amount").value.trim();
+    const note = document.getElementById("p-note").value.trim();
+
+    if (!name || !date || !amount) {
+      Swal.fire("Error", "Please fill Employee Name, Date, and Amount", "error");
+      return;
+    }
+
+    Swal.showLoading();
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "addPayment", name, date, amount, note })
+      });
+      const text = await res.text();
+      Swal.close();
+
+      if (text.toLowerCase().includes("saved")) {
+        Swal.fire("Success", "Payment sent successfully!", "success");
+        loadPayments();
+        // Clear inputs
+        document.getElementById("p-name").value = "";
+        document.getElementById("p-date").value = "";
+        document.getElementById("p-amount").value = "";
+        document.getElementById("p-note").value = "";
+      } else {
+        Swal.fire("Error", text, "error");
+      }
+    } catch {
+      Swal.close();
+      Swal.fire("Error", "Network error. Please try again.", "error");
+    }
+  }
+
+  // Send Notice (admin only)
+  async function sendNotice() {
+    const date = document.getElementById("n-date").value;
+    const message = document.getElementById("n-message").value.trim();
+
+    if (!date || !message) {
+      Swal.fire("Error", "Please fill Date and Notice Message", "error");
+      return;
+    }
+
+    Swal.showLoading();
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "addNotice", date, message })
+      });
+      const text = await res.text();
+      Swal.close();
+
+      if (text.toLowerCase().includes("saved")) {
+        Swal.fire("Success", "User added successfully!", "success");
+        loadUsers();
+        // Clear inputs
+        document.getElementById("u-username").value = "";
+        document.getElementById("u-key").value = "";
+      } else {
+        Swal.fire("Error", text, "error");
+      }
+    } catch {
+      Swal.close();
+      Swal.fire("Error", "Network error. Please try again.", "error");
+    }
+  }
+
+  // Logout
+  function logout() {
+    Swal.fire({
+      title: "Logout?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, logout",
+      cancelButtonText: "Cancel"
+    }).then(result => {
+      if (result.isConfirmed) {
+        showLogin();
+        document.getElementById("username").value = "";
+        document.getElementById("password").value = "";
+      }
+    });
+  }
+
+  // Initial state: show login
+  showLogin();
+</script>
+
+</body>
+</html>
